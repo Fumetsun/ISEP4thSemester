@@ -1,0 +1,53 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant LanguageEngineerUI
+participant RegisterPluginUI
+participant RegisterPluginController
+participant PersistenceContext
+participant RepositoryFactory
+participant RegisterdPluginFactory
+participant ManagePluginService
+participant RegisteredPluginsRepository
+
+activate LanguageEngineerUI
+LanguageEngineerUI -> RegisterPluginUI : registerPlugin()
+activate RegisterPluginUI
+RegisterPluginUI -> RegisterPluginController : create()
+activate RegisterPluginController
+RegisterPluginController -> PersistenceContext : repositories()
+deactivate RegisterPluginController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> RegisteredPluginsRepository : create()
+deactivate RepositoryFactory
+
+RegisterPluginUI -> RegisterPluginController : registerPlugin(pluginFileName, pluginName, pluginType)
+deactivate RegisterPluginUI
+activate RegisterPluginController
+RegisterPluginController -> RegisterdPluginFactory : registerPlugin(pluginFileName, pluginName, pluginType)
+deactivate RegisterPluginController
+activate RegisterdPluginFactory
+RegisterdPluginFactory --> RegisterPluginController : registeredPlugin
+deactivate RegisterdPluginFactory
+activate RegisterPluginController
+RegisterPluginController -> ManagePluginService : addPlugin(registeredPlugin)
+activate ManagePluginService
+ManagePluginService -> RegisteredPluginsRepository : save(registeredPlugin)
+deactivate ManagePluginService
+
+RegisterPluginController --> RegisterPluginUI : registeredPlugin
+deactivate RegisterPluginController
+activate RegisterPluginUI
+RegisterPluginUI --> LanguageEngineerUI
+deactivate RegisterPluginUI
+deactivate LanguageEngineerUI
+
+
+
+
+@enduml

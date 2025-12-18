@@ -1,0 +1,53 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant CustomerManagerUI
+participant RegisterJobOfferUI
+participant RegisterJobOfferController
+participant PersistenceContext
+participant RepositoryFactory
+participant ManagePluginService
+participant RegisteredPluginsRepository
+
+
+activate CustomerManagerUI
+CustomerManagerUI -> RegisterJobOfferUI : registerJobOffer()
+activate RegisterJobOfferUI
+RegisterJobOfferUI -> RegisterJobOfferController : create()
+activate RegisterJobOfferController
+RegisterJobOfferController -> PersistenceContext : repositories()
+deactivate RegisterJobOfferController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> RegisteredPluginsRepository : create()
+deactivate RepositoryFactory
+
+RegisterJobOfferUI -> RegisterJobOfferController : getPluginList()
+deactivate RegisterJobOfferUI
+activate RegisterJobOfferController
+RegisterJobOfferController -> ManagePluginService : allPlugins()
+deactivate RegisterJobOfferController
+activate ManagePluginService
+ManagePluginService -> RegisteredPluginsRepository : findAll()
+deactivate ManagePluginService
+activate RegisteredPluginsRepository
+
+RegisteredPluginsRepository --> ManagePluginService : plugins
+deactivate RegisteredPluginsRepository
+activate ManagePluginService
+ManagePluginService --> RegisterJobOfferController : plugins
+deactivate ManagePluginService
+activate RegisterJobOfferController
+RegisterJobOfferController --> RegisterJobOfferUI : plugins
+deactivate RegisterJobOfferController
+activate RegisterJobOfferUI
+RegisterJobOfferUI -> RegisterJobOfferUI : doShow()
+
+
+RegisterJobOfferUI --> CustomerManagerUI
+deactivate RegisterJobOfferUI
+@enduml

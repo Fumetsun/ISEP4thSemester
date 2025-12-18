@@ -1,0 +1,16 @@
+- Lead Programmer Job Requirements -
+
+1- You have already worked in this position. (True / False) <TFANS>
+R: True
+
+2- Enter your type of academic-degree. (None / Bachelors / Masters / PhD) <TEXTANS>
+R: Masters.
+
+3- How many team projects and teams have you lead? (A - Never lead any project/team) (B - 1 to 3) (C - 4 to 5) (D - 5+) <SCANS>
+R: (D)
+
+4- Select one or more  programming languages you are proficient in. (A - Java) (B - Javascript) (C - Python) (D - C#) <MCANS>
+R: A, B.
+
+5- Enter your number of years of experience. (integer) <INTANS>
+R: 10

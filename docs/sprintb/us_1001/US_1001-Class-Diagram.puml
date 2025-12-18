@@ -1,0 +1,114 @@
+@startuml
+
+class CustomerManagerUI {
+    +registerCustomer()
+    '+listCustomers()
+}
+
+class RegisterCustomerUI {
+
+}
+
+class RegisterCustomerController {
+    +registerUser()
+    +createCustomerUserCreatedEvent()
+}
+
+class PersistenceContext {
+    +repositories()
+}
+
+class RepositoryFactory {
+    +newTransactionalContext();
+    + users(TransactionalContext autoTx);
+    + users();
+    + customers(TransactionalContext autoTx);
+    + customers();
+
+}
+
+class PasswordGeneratorService {
+    +generateModeledPassword()
+}
+
+class UserManagementService {
+    - userRepository: UserRepository
+    - encoder: PasswordEncoder
+    - policy: PasswordPolicy
+    + registerNewUser()
+}
+
+class SystemUserBuilder {
+    - username: Username
+    - password: Password
+    - name: Name
+    - email: EmailAddress
+    - createdOn: Calendar
+    - roles: RoleSet
+    - policy: PasswordPolicy
+    - encoder: PasswordEncoder
+    + with()
+    + withUsername()
+    + withPassword()
+    + withName()
+    + withEmail()
+    + withRoles()
+    + createdOn()
+    + build()
+}
+
+class CustomerRepository {
+
+}
+
+class UserRepository {
+
+}
+
+'class ListCustomersUI {}
+
+'class ListCustomersController {
+    '+ showCustomers()
+'}
+
+CustomerManagerUI ..> RegisterCustomerUI
+'CustomerManagerUI ..> ListCustomersUI
+
+RegisterCustomerUI ..> RegisterCustomerController
+
+'ListCustomersUI ..> ListCustomersController
+
+RegisterCustomerController ..> PersistenceContext : repositories ()
+'RegisterCustomerController ....> UserRepository
+RegisterCustomerController ..> UserManagementService
+RegisterCustomerController ..> PasswordGeneratorService
+
+UserManagementService ..> SystemUserBuilder
+UserManagementService -> UserRepository : save()
+
+'ListCustomersController ..> PersistenceContext : repositories()
+'ListCustomersController ....> CustomerRepository
+'ListCustomersController ....> UserRepository
+
+PersistenceContext --> RepositoryFactory : create()
+
+RepositoryFactory --> CustomerRepository : create()
+RepositoryFactory --> UserRepository : create()
+
+'========================================================================
+
+class CustomerUserCreatedEventWatchDog{
+}
+
+class RegisterCustomerWatchdogController{
+    +registerCustomer()
+}
+
+class CustomerFactory{
+    +createCustomer()
+}
+
+CustomerUserCreatedEventWatchDog ..> RegisterCustomerWatchdogController
+RegisterCustomerWatchdogController ..> CustomerFactory
+RegisterCustomerWatchdogController -----> CustomerRepository : save()
+@enduml

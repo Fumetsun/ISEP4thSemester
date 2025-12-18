@@ -1,0 +1,311 @@
+@startuml US1017_SD
+'https://plantuml.com/sequence-diagram
+
+title Sequence Diagram - US 1017
+
+autonumber
+
+actor "Customer Manager"					as cm
+participant MainMenu						as mm
+participant SaveResponsesUI					as ui
+participant SaveResponsesController			as ctrl
+participant PersistenceContext				as persistence
+participant RepositoryFactory				as repo
+participant ListJobOfferService				as offerservice
+participant PluginHandlerService			as pluginservice
+participant ListJobApplicationService		as listappservice
+participant JobApplicationManagementService	as appservice
+participant ImportFileService				as fileservice
+participant JobOfferRepository				as offerrepo
+participant JobOffer						as offer
+participant JobOfferDTO						as offerdto
+participant JobApplicationRepository		as apprepo
+participant JobApplication					as app
+participant ApplicationDTO					as appdto
+
+activate cm
+
+	cm -> mm : upload candidate responses
+
+	activate mm
+
+		mm -> ui : show()
+
+		activate ui
+
+			ui -> ctrl : create()
+
+			activate ctrl
+				
+				ctrl -> persistence : repositories()
+
+				activate persistence
+					persistence -> repo : create()
+				deactivate persistence
+
+			deactivate ctrl
+
+			ui -> ctrl : getJobOffers()
+
+			activate ctrl
+
+				ctrl -> offerservice : getJobOffersOfManager(manager)
+
+				activate offerservice
+
+					offerservice -> offerrepo : findAllOffersOfManager(manager)
+
+					activate offerrepo
+						offerrepo --> offerservice : offers
+					deactivate offerrepo
+				
+					loop for each offer
+
+						offerservice -> offer : toDTO()
+
+						activate offer
+							offer -> offerdto : create
+							offer --> offerservice : jobOfferDTO
+						deactivate offer
+					
+					end
+
+					offerservice --> ctrl : listOffersDTO
+				
+				deactivate offerservice
+
+				ctrl --> ui : listOffersDTO
+
+			deactivate ctrl
+
+			ui --> cm : choose offer
+
+		deactivate ui
+
+		cm -> ui : select offer
+
+		activate ui
+
+			ui -> ctrl : checkInterview(JobOfferDTO)
+
+			activate ctrl
+
+				ctrl -> offerservice : getInterviewModelOfJobOffer(jobRefCode)
+
+				activate offerservice
+
+					offerservice -> offerrepo : findInterviewByJobRefCode(jobRefCode)
+
+					activate offerrepo
+						offerrepo --> offerservice : interviewModel
+					deactivate offerrepo
+
+					offerservice --> ctrl : interviewModel
+
+				deactivate offerservice
+
+				ctrl --> ui : interview model existence
+
+			deactivate ctrl
+
+			ui -> ctrl : getJobApplications(jobOfferDTO)
+
+			activate ctrl
+
+				ctrl -> listappservice : getJobApplicationsOfJobOffer(jobOfferDTO)
+
+				activate listappservice
+
+					listappservice -> apprepo : findAllApplicationsOfJobOffer(jobRefCode)
+
+					activate apprepo
+						apprepo --> listappservice : applications
+					deactivate apprepo
+
+					loop for each application
+
+						listappservice -> app : toDTO()
+
+						activate app
+							app -> appdto : create
+							app --> listappservice : applicatioDTO
+						deactivate app
+
+					end
+			
+					listappservice --> ctrl: listApplicationsDTO
+				
+				deactivate listappservice
+
+				ctrl --> ui : listApplicationsDTO
+			
+			deactivate ctrl
+
+			ui --> cm : choose application
+
+		deactivate ui
+
+		cm -> ui : select application
+
+		activate ui
+
+			ui -> ctrl : getJobApplicationByDTO(ApplicationDTO)
+
+			activate ctrl
+
+				ctrl -> listappservice : getByRef(appCode)
+
+				activate listappservice
+
+					listappservice -> apprepo : findByRefCode(code)
+
+					activate apprepo
+						apprepo --> listappservice : application
+					deactivate apprepo
+
+					listappservice --> ctrl : application
+				
+				deactivate listappservice
+
+				ctrl --> ui
+
+			deactivate ctrl
+
+			ui -> ctrl : checkAnswerAlreadyExists(ApplicationDTO)
+
+			activate ctrl
+
+				ctrl -> listappservice : getByRef(appCode)
+
+				activate listappservice
+
+					listappservice -> apprepo : findByRefCode(code)
+
+					activate apprepo
+						apprepo --> listappservice : application
+					deactivate apprepo
+
+					listappservice --> ctrl : application
+				
+				deactivate listappservice
+
+				alt no answer in system
+
+					ctrl --> ui : false
+				
+				else an answer already exists
+
+					ctrl --> ui : true
+			
+			deactivate ctrl
+
+			ui --> cm : delete old answers?
+
+		deactivate ui
+
+		cm -> ui : yes
+
+		activate ui
+
+			ui -> ctrl : deleteOldAnswers(ApplicationDTO)
+
+			activate ctrl
+
+				ctrl -> listappservice : getByRef(appCode)
+
+				activate listappservice
+
+					listappservice -> apprepo : findByRefCode(code)
+
+					activate apprepo
+						apprepo --> listappservice : application
+					deactivate apprepo
+
+					listappservice --> ctrl : application
+				
+				deactivate listappservice
+
+				ctrl -> fileservice : removeFile(applicationFilePath, file)
+
+				activate fileservice
+					fileservice --> ctrl
+				deactivate fileservice
+
+				ctrl --> ui
+
+			deactivate ctrl
+
+			end
+
+			ui --> cm : request file path
+
+		deactivate ui
+
+		cm -> ui : responses file path
+
+		activate ui
+
+			ui -> ctrl : validateResponses(filePath)
+
+			activate ctrl
+
+				ctrl -> pluginservice : activateCheckerFunction(filePath)
+
+				activate pluginservice
+					pluginservice --> ctrl : valid/invalid answers
+				deactivate pluginservice
+
+				ctrl --> ui : valid/invalid answers
+
+			deactivate ctrl
+
+			ui -> ctrl : saveResponses(applicationDTO, filePath)
+
+			activate ctrl
+
+				ctrl -> listappservice : getByRef(appCode)
+
+				activate listappservice
+
+					listappservice -> apprepo : findByRefCode(code)
+
+					activate apprepo
+						apprepo --> listappservice : application
+					deactivate apprepo
+
+					listappservice --> ctrl : application
+				
+				deactivate listappservice
+				
+				ctrl -> fileservice : importApplicantAnswers(srcFile, dstPath)
+
+				activate fileservice
+					fileservice --> ctrl
+				deactivate fileservice
+
+				ctrl -> appservice : saveResponses(application, filePath)
+
+				activate appservice
+
+					appservice -> app : addFileRef(file)
+
+					appservice -> apprepo : save
+
+					appservice --> ctrl
+
+				deactivate appservice
+
+				ctrl --> ui
+
+			deactivate ctrl
+
+			ui --> mm
+
+		deactivate ui
+
+		mm --> cm
+
+	deactivate mm
+
+deactivate cm
+@enduml

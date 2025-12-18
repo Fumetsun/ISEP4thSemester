@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title System Sequence Diagram - US 3000
+
+autonumber
+actor Candidate
+participant System
+
+activate Candidate
+Candidate -> System: Request to all own applications
+
+activate System
+System --> Candidate: Asks for confirmation of identity
+deactivate System
+
+Candidate -> System: Confirms identity
+
+activate System
+System --> Candidate: Displays all own applications
+deactivate System
+
+@enduml

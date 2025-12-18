@@ -1,0 +1,106 @@
+@startuml US1018_CD
+'https://plantuml.com/class-diagram
+
+title Class Diagram - US 1018
+
+class MainMenu {
+}
+
+class GradeInterviewsUI {
+	+ show()
+}
+
+class GradeInterviewsController {
+	+ create()
+	+ getJobOffers() : Iterable<JobOfferDTO>
+	+ getPlugin(JobOfferDTO) : boolean
+	+ getApplications(JobOfferDTO) : boolean
+	+ gradeInterviews(JobOfferDto offer) : Iterable<ApplicationDTO>
+}
+
+class PersistenceContext {}
+
+class RepositoryFactory {}
+
+class ListJobOfferService {
+	+ getJobOffersOfManager(SystemUser manager) : Iterable<JobOfferDTO> 
+}
+
+class JobOfferRepository {
+	+ findAllOffersOfManager(SystemUser manager) : Iterable<JobOffer> 
+}
+
+class JobOffer {
+	+ toDTO() : JobOfferDTO
+}
+
+class ListJobApplicationService {
+	+ getJobApplicationsNonDTO(JobOfferDTO jobOfferDTO) : Iterable<JobApplication> 
+}
+
+class JobApplicationManagementService {
+	+ getJobApplicationsOfJobOfferNonDTO(JobRefCode jobRefCode) : Iterable<ApplicationDTO>
+}
+
+class JobApplicationRepository {
+	+ findApplicationsOfJobOffer(JobOffer offer) : Iterable<JobApplication> 
+}
+
+class JobApplication {
+	+ toDTO() : ApplicationDTO
+	+ addFileRef(String file)
+}
+
+class PluginHandlerService {
+	
+	+ activateEvaluationFunction(String symbolTable, String candidateInput, int type) : int
+}
+
+class RegisteredPlugin {}
+
+class ApplicationDTO {
+	- String email
+	- String filesPath
+	- String attachedFile
+	- int jobRefCode
+	- String candidate
+	+ toString()
+	+ getEmail()
+	+ getFilesPath()
+	+ getAttachedFile()
+	+ getJobRefCode()
+	+ getCandidate()
+}
+
+class JobOfferDTO {
+	- String refCode
+	- String title
+	- String jobMode
+	- String numberVacancies
+	+ toString()
+    + getRefCode()
+    + getTitle()
+    + getJobMode()
+    + getNumberVacancies()
+}
+
+MainMenu .-> GradeInterviewsUI : show()
+GradeInterviewsUI .-> GradeInterviewsController : create()
+GradeInterviewsController .-> PersistenceContext
+GradeInterviewsController .-> ListJobOfferService
+GradeInterviewsController .-> ListJobApplicationService
+GradeInterviewsController .-> JobApplicationManagementService
+PersistenceContext .-> RepositoryFactory : create()
+ListJobOfferService .-> JobOfferRepository
+ListJobOfferService .-> JobOffer
+JobOffer .-> JobOfferDTO : create
+JobOffer .-> RegisteredPlugin
+ListJobApplicationService .-> JobApplicationRepository
+ListJobApplicationService .-> JobApplication
+JobApplication .-> ApplicationDTO : create
+JobApplication .-> JobOffer
+JobApplicationManagementService .-> JobApplicationRepository
+JobApplicationManagementService .-> JobApplication
+JobApplicationManagementService .-> PluginHandlerService
+
+@enduml

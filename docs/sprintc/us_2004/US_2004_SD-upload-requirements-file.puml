@@ -1,0 +1,188 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor Operator
+participant OperatorUI
+participant UploadRequirementsFileUI
+participant UploadRequirementsFileController
+participant AuthorizationService
+participant ListJobApplicationService
+participant ListJobOfferService
+participant JobOfferRepository
+participant PluginHandlerService
+participant ImportFileService
+participant JobApplicationManagementService
+participant JobApplicationRepository
+
+activate Operator
+
+	Operator -> OperatorUI : uploads candidate responses
+
+	activate OperatorUI
+
+		OperatorUI -> UploadRequirementsFileUI : show()
+
+		activate UploadRequirementsFileUI
+
+			UploadRequirementsFileUI -> UploadRequirementsFileController : create()
+
+			activate UploadRequirementsFileController
+                group Repository creation process (team-planning-decisions.md)
+				    UploadRequirementsFileController -> UploadRequirementsFileController : repositories()
+                end group
+			deactivate UploadRequirementsFileController
+
+            UploadRequirementsFileUI -> UploadRequirementsFileController : getJobOffers()
+                activate UploadRequirementsFileController
+                    UploadRequirementsFileController -> ListJobApplicationService : getOffers()
+                    deactivate UploadRequirementsFileController
+                    activate ListJobApplicationService
+                        ListJobApplicationService -> JobOfferRepository : findAllOffers()
+                        activate JobOfferRepository
+                            JobOfferRepository --> ListJobApplicationService : jobOffers
+                        deactivate JobOfferRepository
+                            ListJobApplicationService --> UploadRequirementsFileController: jobOffersDTO
+                    deactivate ListJobApplicationService
+                activate UploadRequirementsFileController
+                UploadRequirementsFileController --> UploadRequirementsFileUI : jobOffersDTO
+                deactivate UploadRequirementsFileController
+            UploadRequirementsFileUI --> Operator : choose job offer
+            deactivate UploadRequirementsFileUI
+
+        Operator -> UploadRequirementsFileUI : selects job offer
+        activate UploadRequirementsFileUI
+			UploadRequirementsFileUI -> UploadRequirementsFileController : getJobApplicationsOfJobOffer(jobRefCode)
+                activate UploadRequirementsFileController
+                    UploadRequirementsFileController -> ListJobApplicationService : getJobApplicationsOfJobOfferCode(jobRefCode)
+                    deactivate UploadRequirementsFileController
+                    activate ListJobApplicationService
+                        ListJobApplicationService -> JobApplicationRepository : findAllApplicationsOfJobOffer(jobRefCode)
+                        activate JobApplicationRepository
+                            JobApplicationRepository --> ListJobApplicationService : applications
+                        deactivate JobApplicationRepository
+                            ListJobApplicationService --> UploadRequirementsFileController: listApplicationsDTO
+                    deactivate ListJobApplicationService
+                activate UploadRequirementsFileController
+                UploadRequirementsFileController --> UploadRequirementsFileUI : listApplicationsDTO
+                deactivate UploadRequirementsFileController
+            UploadRequirementsFileUI --> Operator : choose application
+		deactivate UploadRequirementsFileUI
+
+' ==============================
+		Operator -> UploadRequirementsFileUI : selects application
+
+		activate UploadRequirementsFileUI
+			UploadRequirementsFileUI -> UploadRequirementsFileController : checkIfApplicationHasRequirementsFile(applicationDTO)
+			activate UploadRequirementsFileController
+                UploadRequirementsFileController -> UploadRequirementsFileController : checkIfApplicationHasRequirementsFile(applicationDTO)
+                UploadRequirementsFileController --> UploadRequirementsFileUI : requirementFileExistence
+			deactivate UploadRequirementsFileController
+    alt If file exists
+			UploadRequirementsFileUI --> Operator : asks if wants to overwrite the file
+
+		deactivate UploadRequirementsFileUI
+    Operator -> UploadRequirementsFileUI : answers
+
+        activate UploadRequirementsFileUI
+            alt If answer == true
+                UploadRequirementsFileUI -> UploadRequirementsFileController : deleteCurrentRequirementFile(aplicationDTO, requirementFile)
+                deactivate UploadRequirementsFileUI
+                    activate UploadRequirementsFileController
+                        UploadRequirementsFileController -> JobApplicationManagementService : removeFile(applicationDTO, file)
+                        deactivate UploadRequirementsFileController
+                            activate JobApplicationManagementService
+                                JobApplicationManagementService -> JobApplicationManagementService : removeFile(file)
+                                JobApplicationManagementService -> JobApplicationRepository : save()
+                                JobApplicationManagementService --> UploadRequirementsFileController : operationSuccess
+                            deactivate JobApplicationManagementService
+                    activate UploadRequirementsFileController
+                    UploadRequirementsFileController -> UploadRequirementsFileUI : operationSuccess
+                deactivate UploadRequirementsFileController
+            activate UploadRequirementsFileUI
+            else answer == false
+
+            UploadRequirementsFileUI -> UploadRequirementsFileUI
+            note right
+                Ends program functionality and returns to previous menu.
+            end note
+
+            end alt
+    end alt
+                UploadRequirementsFileUI --> Operator : request file path
+
+        deactivate UploadRequirementsFileUI
+
+' ===========================
+		Operator -> UploadRequirementsFileUI : responses file path
+
+		activate UploadRequirementsFileUI
+            UploadRequirementsFileUI -> UploadRequirementsFileController : validateResponses(filePath, jobOffer)
+            activate UploadRequirementsFileController
+                UploadRequirementsFileController -> ListJobOfferService : getJobRequirementsOfJobOffer(jobRefCode)
+                activate ListJobOfferService
+                    ListJobOfferService -> JobOfferRepository : findRequirementsByJobRefCode(jobRefCode)
+                    activate JobOfferRepository
+                        JobOfferRepository --> ListJobOfferService : jobRequirements
+                    deactivate JobOfferRepository
+                    ListJobOfferService --> UploadRequirementsFileController : jobRequirements
+                deactivate ListJobOfferService
+                UploadRequirementsFileController -> PluginHandlerService : activateCheckerFunction(jobRequirements, filePath)
+                activate PluginHandlerService
+                    PluginHandlerService --> UploadRequirementsFileController : operationSuccess
+                deactivate PluginHandlerService
+                UploadRequirementsFileController --> UploadRequirementsFileUI : operationSuccess
+            deactivate UploadRequirementsFileController
+
+        alt operationSuccess == true
+			UploadRequirementsFileUI -> UploadRequirementsFileController : saveResponses(applicationDTO, filePath)
+
+			activate UploadRequirementsFileController
+				
+				UploadRequirementsFileController -> ListJobApplicationService : findApplicationByRef(refCode)
+
+				activate ListJobApplicationService
+
+					ListJobApplicationService -> JobApplicationRepository : findByRefCode(refCode)
+					
+					activate JobApplicationRepository
+						JobApplicationRepository --> ListJobApplicationService : application
+					deactivate JobApplicationRepository
+				
+					ListJobApplicationService --> UploadRequirementsFileController : application
+
+				deactivate ListJobApplicationService
+
+				UploadRequirementsFileController -> ImportFileService : importApplicantAnswers(srcFile, dstPath, PluginType.JOBREQUIREMENTS)
+
+				activate ImportFileService
+					ImportFileService --> UploadRequirementsFileController
+				deactivate ImportFileService
+
+				UploadRequirementsFileController -> JobApplicationManagementService : saveResponses(application, filePath)
+
+				activate JobApplicationManagementService
+
+					JobApplicationManagementService -> JobApplicationManagementService : addFileRef(file)
+
+					JobApplicationManagementService -> JobApplicationRepository : save
+
+					JobApplicationManagementService --> UploadRequirementsFileController
+
+				deactivate JobApplicationManagementService
+
+				UploadRequirementsFileController --> UploadRequirementsFileUI
+
+			deactivate UploadRequirementsFileController
+    end alt
+			UploadRequirementsFileUI --> OperatorUI : operationSuccess
+
+		deactivate UploadRequirementsFileUI
+
+		OperatorUI --> Operator
+
+	deactivate OperatorUI
+
+deactivate Operator
+@enduml

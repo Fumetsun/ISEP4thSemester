@@ -1,0 +1,140 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor CustomerManager
+
+participant CustomerManagerUI
+participant ValidateJobOfferApplicationsUI
+participant ValidateJobOfferApplicationsController
+participant AuthorizationService
+participant ListJobOfferService
+participant JobOfferRepository
+participant ListJobApplicationService
+participant JobApplicationManagementService
+participant PluginHandlerService
+participant JobApplicationRepository
+
+activate CustomerManager
+CustomerManager -> CustomerManagerUI : validate jobAplications
+    activate CustomerManagerUI
+    CustomerManagerUI -> ValidateJobOfferApplicationsUI : validateApplications()
+        activate ValidateJobOfferApplicationsUI
+        ValidateJobOfferApplicationsUI -> ValidateJobOfferApplicationsController : create()
+            activate ValidateJobOfferApplicationsController
+                group Repository creation process (team-planning-decisions.md)
+                ValidateJobOfferApplicationsController -> ValidateJobOfferApplicationsController : repositories()
+                end group
+            deactivate ValidateJobOfferApplicationsController
+        ValidateJobOfferApplicationsUI -> ValidateJobOfferApplicationsController : getJobOffers()
+        deactivate ValidateJobOfferApplicationsUI
+            activate ValidateJobOfferApplicationsController
+            ValidateJobOfferApplicationsController -> AuthorizationService : loggedinUserWithPermissions(BaseRoles.CUSTOMERMANAGER)
+            deactivate ValidateJobOfferApplicationsController
+                activate AuthorizationService
+                AuthorizationService -> ValidateJobOfferApplicationsController : loggedUser
+                deactivate AuthorizationService
+            activate ValidateJobOfferApplicationsController
+            ValidateJobOfferApplicationsController -> ListJobOfferService : getJobOffersOfManager(loggedUser)
+            deactivate ValidateJobOfferApplicationsController
+                activate ListJobOfferService
+                ListJobOfferService -> JobOfferRepository : getJobOffersOfManager(loggedUser)
+                deactivate ListJobOfferService
+                    activate JobOfferRepository
+                    JobOfferRepository --> ListJobOfferService : jobOffers
+                    deactivate JobOfferRepository
+                activate ListJobOfferService
+                ListJobOfferService --> ValidateJobOfferApplicationsController : jobOffersDTO
+                deactivate ListJobOfferService
+            activate ValidateJobOfferApplicationsController
+            ValidateJobOfferApplicationsController --> ValidateJobOfferApplicationsUI : jobOffersDTO
+            deactivate ValidateJobOfferApplicationsController
+        activate ValidateJobOfferApplicationsUI
+        ValidateJobOfferApplicationsUI --> CustomerManager : choose jobOffer
+        deactivate ValidateJobOfferApplicationsUI
+
+CustomerManager -> ValidateJobOfferApplicationsUI : selects jobOffer
+        activate ValidateJobOfferApplicationsUI
+        ValidateJobOfferApplicationsUI -> ValidateJobOfferApplicationsController : checkRequirements(jobOffer)
+        deactivate ValidateJobOfferApplicationsUI
+            activate ValidateJobOfferApplicationsController
+            ValidateJobOfferApplicationsController --> ValidateJobOfferApplicationsUI : jobRequirementExistence
+            deactivate ValidateJobOfferApplicationsController
+        activate ValidateJobOfferApplicationsUI
+
+    alt If JobRequirements Model doesn't exist
+            ValidateJobOfferApplicationsUI --> CustomerManager : terminates operation
+    end alt
+
+        ValidateJobOfferApplicationsUI -> ValidateJobOfferApplicationsController : checkJobApplicationsOfJobOffer(jobOffer)
+        deactivate ValidateJobOfferApplicationsUI
+            activate ValidateJobOfferApplicationsController
+                ValidateJobOfferApplicationsController --> ValidateJobOfferApplicationsUI : applicationsExistence
+            deactivate ValidateJobOfferApplicationsController
+        activate ValidateJobOfferApplicationsUI
+
+        alt If doesn't exist any JobApplications
+            ValidateJobOfferApplicationsUI --> CustomerManager : terminates operation
+        end alt
+
+        ValidateJobOfferApplicationsUI -> ValidateJobOfferApplicationsController : validateAllApplicationsOfJobOffer(jobOfferDTO)
+        deactivate ValidateJobOfferApplicationsUI
+            activate ValidateJobOfferApplicationsController
+                ValidateJobOfferApplicationsController -> ListJobOfferService : getJobRequirementsOfJobOffer(jobOfferDTO)
+                deactivate ValidateJobOfferApplicationsController
+                activate ListJobOfferService
+                    ListJobOfferService -> JobOfferRepository : findByRef(jobRefCode)
+                    deactivate ListJobOfferService
+                    activate JobOfferRepository
+                        JobOfferRepository --> ListJobOfferService : requirementsModel
+                    deactivate JobOfferRepository
+                    activate ListJobOfferService
+                    ListJobOfferService --> ValidateJobOfferApplicationsController : requirementsModel
+                deactivate ListJobOfferService
+                activate ValidateJobOfferApplicationsController
+
+                ValidateJobOfferApplicationsController -> ListJobApplicationService : getJobApplicationsOfJobOffer(jobRefCode)
+                deactivate ValidateJobOfferApplicationsController
+                activate ListJobApplicationService
+                    ListJobApplicationService -> JobApplicationRepository : findAllApplicationsOfJobOffer(jobRefCode)
+                    deactivate ListJobApplicationService
+                    activate JobApplicationRepository
+                        JobApplicationRepository --> ListJobApplicationService : applications
+                    deactivate JobApplicationRepository
+                    activate ListJobApplicationService
+                    ListJobApplicationService --> ValidateJobOfferApplicationsController: applicationsDTO
+                deactivate ListJobApplicationService
+                activate ValidateJobOfferApplicationsController
+
+                ValidateJobOfferApplicationsController -> JobApplicationManagementService : validateAndSave(applicationsDTO, requirementsModel)
+                deactivate ValidateJobOfferApplicationsController
+                activate JobApplicationManagementService
+                    loop for each application
+                        alt has jobRequirement file
+                            JobApplicationManagementService -> PluginHandlerService : activateEvaluationFunction(requirementsModel, answers, type)
+                            deactivate JobApplicationManagementService
+                                activate PluginHandlerService
+                                    PluginHandlerService --> JobApplicationManagementService : result
+                                deactivate PluginHandlerService
+                            activate JobApplicationManagementService
+                                JobApplicationManagementService -> JobApplicationManagementService : changeState(result)
+                                JobApplicationManagementService -> JobApplicationRepository : save
+                        end
+                    end
+                    JobApplicationManagementService --> ValidateJobOfferApplicationsController : operationReport
+                deactivate JobApplicationManagementService
+                activate ValidateJobOfferApplicationsController
+                ValidateJobOfferApplicationsController --> ValidateJobOfferApplicationsUI : operationReport
+            deactivate ValidateJobOfferApplicationsController
+            activate ValidateJobOfferApplicationsUI
+            ValidateJobOfferApplicationsUI --> CustomerManager : shows operation \nresult
+
+
+        deactivate ValidateJobOfferApplicationsUI
+    deactivate CustomerManagerUI
+
+
+
+
+@enduml

@@ -1,0 +1,52 @@
+@startuml
+
+class ExportTemplateUI {
+        + doShow(): boolean
+        + headline(): String
+    }
+
+class ExportTemplateController {
+        + getAllPlugins(): Iterable<RegisteredPluginDTO>
+        + generateTemplate(fileName: String, filePath: String, outputPath: String): void
+    }
+
+class PluginHandler {
+        + registerPlugin(fileName: String, pluginName: String, pluginType: int): RegisteredPlugin
+        + activateTemplateFunction(pluginFilePath: String, outputFolder: String): void
+        + activateEvaluationFunctions(pluginFilePath: String, candidateInput: String): void
+    }
+
+class PersistenceContext{
+    +repositories()
+}
+
+class RepositoryFactory{
+
++newTransactionalContext();
+    + users(TransactionalContext var1);
+    + users();
+    + clientUsers(TransactionalContext var1);
+    + clientUsers();
+    + signupRequests(TransactionalContext var1);
+    + signupRequests();
+
+    }
+    class ManagePluginService {
+            + addPlugin(plugin: RegisteredPlugin): boolean
+            + allPlugins(): Iterable<RegisteredPlugin>
+        }
+        interface RegisteredPluginsRepository {
+                + findByRef(name: PluginFileName): Optional<RegisteredPlugin>
+                + findAllPlugins(): Iterable<RegisteredPlugin>
+                +findAllInterview() : Iterable<RegisteredPlugin>
+            }
+
+
+    PersistenceContext -> RepositoryFactory : create()
+    RepositoryFactory -> RegisteredPluginsRepository : create()
+    ExportTemplateUI .-> ExportTemplateController
+    ExportTemplateController .-> ManagePluginService
+    ManagePluginService .-> PluginHandler
+    ManagePluginService .-> RegisteredPluginsRepository
+
+@enduml

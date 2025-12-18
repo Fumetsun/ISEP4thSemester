@@ -1,0 +1,6 @@
+Programmer
+<TFANS>|You have already worked in this position. (True / False)|True_1
+<TEXTANS>|Enter your type of academic-degree. (None / Bachelors / Masters / PhD)|Masters_1|Phd_1|None_0
+<SCANS>|How many team projects and teams have you lead? (A - Never lead any project/team) (B - 1 to 3) (C - 4 to 5) (D - 5+)|(D)_1
+<MCANS>|Select one or more  programming languages you are proficient in. (A - Java) (B - Javascript) (C - Python) (D - C#)|A_1|B_0|C_0|D_1
+<INTANS>|Enter your number of years of experience. (integer)|10_1

@@ -1,0 +1,110 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package UserAggregate{
+    Entity CustomerManager {
+        <<entity>>
+    }
+
+    Entity Customer {
+        <<entity>>
+    }
+
+    class EmailAddress <<(V,#f09000) Identifier value Object>> {}
+    Entity User {
+        <<root entity>>
+    }
+
+    Class Password <<(V,#f04800) value Object>> {}
+    Class Role <<(V,#f04800) value Object>>{}
+    Class Name <<(V,#f04800) value Object>> {}
+    Class Address <<(V,#f04800) value Object>> {}
+}
+
+package JobOfferAggregate{
+    Entity JobOffer {
+        <<root entity>>
+    }
+
+    Class JobRefCode <<(V, #f09000) Identifier value Object>> {}
+    Class JobTitle <<(V,#f04800) value Object>> {}
+    Class ContractType  <<(V,#f04800) value Object>>{}
+    Class JobMode <<(V,#f04800) value Object>> {}
+    Class NumberOfVacancies <<(V,#f04800) value Object>> {}
+    Class JobsDescription <<(V,#f04800) value Object>> {}
+}
+
+Package RequirementsSpecification{
+
+    Entity RequirementSpecification  {
+        <<root entity>>
+    }
+
+    Class RequirementSpecificationDescription <<(V,#f04800) value Object>> {}
+    Class RequirementSpecificationAnswer <<(V,#f04800) value Object>> {}
+    Class RequirementSpecificationRefCode <<(V,#f09000) Identifier value Object>> {}
+}
+
+Package InterviewAggregate{
+    Entity InterviewModel  {
+        <<root entity>>
+    }
+
+    Class InterviewModelRefCode <<(V,#f09000) Identifier value Object>> {}
+    Class InterviewTimeFrame <<(V,#f04800) value Object>> {}
+    Class InterviewSpecifications <<(V,#f04800) value Object>> {}
+    Class InterviewQuestion <<(V,#f04800) value Object>> {}
+    Class InterviewAnswer <<(V,#f04800) value Object>> {}
+    Class AnswerRatings <<(V,#f04800) value Object>> {}
+
+}
+
+Package PluginAggregate{
+    Entity RegisteredPlugin  {
+        <<root entity>>
+    }
+
+    Class PluginFileName <<(V,#f09000) Identifier value Object>> {}
+    Class PluginName <<(V,#f04800) value Object>> {}
+    Class PluginType <<(V,#f04800) value Object>> {}
+}
+
+User "1" ---- "1" EmailAddress : identifies <
+User "1" ---- "1" Address : describes <
+User "1" ---- "1" Role : classifies <
+User "1" ---- "1" Name : describes <
+User "1" ---- "1" Password : describes <
+
+User "1" -- "*" JobOffer : > registers
+CustomerManager ---|> User
+Customer <---- JobOffer : < requests creation
+Customer --|> User
+
+JobOffer "1" ---- "1" JobRefCode : identifies <
+JobOffer "1" ---- "1" JobTitle : describes <
+JobOffer "1" ---- "1" ContractType : describes <
+JobOffer "1" ---- "1" JobMode : describes <
+JobOffer "1" ---- "1" NumberOfVacancies : describes <
+JobOffer "1" ---- "1" JobsDescription : "describes" <
+
+JobOffer "1" ---- "1" RequirementSpecification : <
+JobOffer "1" ---- "1" InterviewModel : <
+
+InterviewModel "1" -- "1" InterviewSpecifications : > contains
+InterviewModel "1" -- "1" InterviewTimeFrame : > contains
+InterviewModel "1" -- "*" InterviewQuestion : < describes
+InterviewModel "1" -- "*" InterviewModelRefCode : < identifies
+InterviewModel "1" -- "1" RegisteredPlugin : "configures" <
+InterviewQuestion - InterviewAnswer : fills <
+InterviewQuestion -- AnswerRatings : grades >
+
+RequirementSpecification "1" -- "1" RequirementSpecificationDescription : "describes" <
+RequirementSpecification "1" -- "1" RequirementSpecificationRefCode : "identifies" <
+RequirementSpecificationAnswer "*" -- "1" RequirementSpecification : "describes" >
+RequirementSpecification "1" -- "1" RegisteredPlugin : "configures" <
+
+RegisteredPlugin -- PluginFileName : locates <
+RegisteredPlugin -- PluginName : identifies <
+RegisteredPlugin -- PluginType : classifies <
+
+@enduml

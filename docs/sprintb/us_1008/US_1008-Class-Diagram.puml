@@ -1,0 +1,97 @@
+@startuml
+
+class LanguageEngineerUI {
+    +registerCustomer()
+    +exportTemplate()
+    +evaluateAnswers()
+}
+
+class RegisterPluginUI {
+
+}
+
+class RegisterPluginController {
+    +registerPlugin()
+}
+
+class PersistenceContext {
+    +repositories()
+}
+
+class RepositoryFactory {
+    +newTransactionalContext();
+    + plugins(TransactionalContext autoTx);
+    + plugins();
+
+}
+
+class PluginHandler {
+    + activateTemplateFunction()
+    + activateEvaluationFunction()
+}
+
+class ManagePluginService {
+    - registeredPluginRepository: RegisteredPluginsRepository
+    + registerNewUser()
+    + findAll()
+}
+
+class RegisteredPluginFactory {
+    +registerPlugin
+}
+
+class RegisteredPluginsRepository {
+
+}
+
+
+LanguageEngineerUI ..> RegisterPluginUI
+
+RegisterPluginUI ..> RegisterPluginController
+
+RegisterPluginController ...> PersistenceContext : repositories ()
+
+RegisterPluginController ..> ManagePluginService
+
+ManagePluginService ..> RegisteredPluginFactory
+ManagePluginService -> RegisteredPluginsRepository : save()
+
+
+PersistenceContext --> RepositoryFactory : create()
+
+RepositoryFactory --> RegisteredPluginsRepository : create()
+
+'==============================================
+class ExportTemplateUI{}
+
+class ExportTemplateController{
+
+    + getAllPlugins()
+    + generateTemplate()
+    }
+
+LanguageEngineerUI ..> ExportTemplateUI
+ExportTemplateUI ..> ExportTemplateController
+
+ExportTemplateController ...> PluginHandler
+ExportTemplateController ...> PersistenceContext : repositories ()
+
+'=============================================
+class EvaluateAnswersUI{}
+
+class EvaluateAnswersController{
+
+    + getAllPlugins()
+    + generateEvaluation()
+    }
+
+LanguageEngineerUI ..> EvaluateAnswersUI
+EvaluateAnswersUI ..> EvaluateAnswersController
+
+EvaluateAnswersController ...> PluginHandler
+EvaluateAnswersController ...> PersistenceContext : repositories ()
+
+ExportTemplateController ....> ManagePluginService
+EvaluateAnswersController ....> ManagePluginService
+
+@enduml

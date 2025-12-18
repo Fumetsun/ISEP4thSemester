@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US3001 - Login Event - SSD
+
+actor Candidate as candidate
+participant System as system
+
+
+activate candidate
+candidate -> system:  performs login
+activate system
+
+alt if there are new notifications
+system --> candidate : informs of new logins
+deactivate system
+end alt
+
+activate candidate
+
+note left of candidate
+Activation bar for candidate remains
+activate since this interaction
+occurs while the normal execution
+flow also is happenning
+end note
+
+@enduml

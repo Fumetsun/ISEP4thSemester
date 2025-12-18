@@ -1,0 +1,29 @@
+- Interview Model-
+
+1- You would say you are a good colleague. (T/F) <TFANS>
+R: 
+
+2- How many career years do you have under your belt? <INTANS>
+R: 
+
+3- What is your level of education? (A - High School) (B - Bachelor) (C - Master) (D - Doctor) (Choose one) <SCANS>
+R: 
+
+4- Can you describe yourself in 5 words or less? (Text Answer - Format: Word, Word, Word.) <TEXTANS>
+R: 
+
+5- What percentage of your time do you spend on coding compared to other tasks, such as debugging, code reviews, and meetings? (0-1, 76% = 0.76) <DECANS>
+R: 
+
+6- What time can you come in during the civil work week, Monday through Friday? (HH:mm) <TIMEANS>
+R: 
+
+7- Which of the following languages are you experienced in? (A - Java) (B - React) (C - Python) (D - Rust) (Choose however many) <MCANS>
+R: 
+
+8- What is your date of birth? (dd/MM/yyyy) <DATEANS>
+R: 
+
+9- On a scale of 1 to 10, how comfortable overall are you with your proficiency in the languages you listed above, in a range of 3? (Example: 7-9) <NUMANS>
+R: 
+

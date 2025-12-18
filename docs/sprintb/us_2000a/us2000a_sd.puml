@@ -1,0 +1,137 @@
+@startuml US2000a_sd
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant OperatorUI as OPUI
+participant RegisterCandidateUI as RCUI
+participant RegisterCandidateController as CTRL
+participant PersistenceContext as PERS
+participant RepositoryFactory as REPO
+participant RegisterCandidateService as CS
+participant ImportFileService as IFS
+participant ListUsersController as LUC
+participant ListRolesServices as LRS
+participant PasswordGeneratorService as PGS
+participant UserManagementService as UMS
+participant CandidateFactory as CF
+participant UserManagementService as UR
+participant CandidateRepository as CR
+
+
+activate OPUI
+OPUI -> RCUI : registerCandidate()
+
+activate RCUI
+
+RCUI -> CTRL : create()
+
+activate CTRL
+CTRL -> PERS : repositories()
+deactivate CTRL
+
+activate PERS
+PERS -> REPO : create()
+deactivate PERS
+
+activate REPO
+REPO -> UR : create()
+REPO -> CR : create()
+deactivate REPO
+
+RCUI --> OPUI : file import or manual insert
+
+deactivate RCUI
+
+alt manual insert
+
+	OPUI -> RCUI : manual insert
+
+	activate RCUI
+	RCUI --> OPUI : request user info
+	deactivate RCUI
+
+	OPUI -> RCUI : gives user info(number,\nemail, firstName, lastName)
+
+	activate RCUI
+
+	RCUI -> CTRL : registerCandidate(number,\nemail, firstName, lastName)
+
+	activate CTRL
+
+	CTRL -> CS : registerCandidate(number,\nemail, firstName, lastName)
+
+	activate CS
+
+else file import
+
+	OPUI -> RCUI : file import
+	RCUI -> CTRL : importCandidateInfo(file)
+	CTRL -> CS : importCandidateInfo(file)
+	CS -> IFS : importCandidateInfo(file)
+
+	activate IFS
+	IFS --> CS : canidate info
+	deactivate IFS
+
+	CS -> CS : registerCandidate(number,\nemail, firstName, lastName)
+
+end
+
+CS -> LUC : find(email)
+
+activate LUC
+LUC --> CS : user
+deactivate LUC
+
+opt user is not in the system
+
+	CS -> LRS : getRoles()
+
+	activate LRS
+	LRS --> CS : roles
+	deactivate LRS
+
+	CS -> PGS : getPassword()
+
+	activate PGS
+	PGS --> CS : password
+	deactivate PGS
+
+	CS -> UMS : registerNewUser(email, password, name, \nemailAddress, address, role)
+
+	activate UMS
+	UMS --> CS : user
+	deactivate UMS
+
+end
+
+CS -> CS : findByNumber(number)
+
+activate CS
+CS --> CS : candidate
+deactivate CS
+
+opt candidate not in the system
+
+	CS -> CF : newCandidate(user, number)
+
+	activate CF
+	CF --> CS : candidate
+	deactivate CF
+
+end
+
+CS --> RCUI : candidate
+
+deactivate CS
+
+deactivate CTRL
+
+RCUI  -> RCUI : doShow()
+RCUI --> OPUI
+
+deactivate RCUI
+
+deactivate OPUI
+@enduml

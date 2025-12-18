@@ -1,0 +1,60 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class CustomerManagerUI{
+    + registerJobOffer()
+}
+
+class DisplayCandidateUI{
+    - DisplayCandidateController: theController
+    + doShow()
+    + showCandidateList()
+    + displayInformation()
+}
+
+class DisplayCandidateController{
+    - GetCandidateService: candidateService
+    + displayCandidates()
+}
+
+class GetCandidateService{
+    - CandidateRepository: repo
+    + getCandidates()
+}
+
+class PersistenceContext{
+    + repositories()
+}
+
+class RepositoryFactory{
+    + newTransactionalContext()
+    + JobOffer(TransactionalContext var1)
+}
+
+class CandidateRepository{
+    + findByNumber()
+    + findAllCandidates()
+}
+
+class ApplicationManagementService{
+    + applicationsOfCandidate(candidate)
+}
+
+class WordAnalysis{
+    + countWords(files)
+}
+
+CustomerManagerUI .-> DisplayCandidateUI
+DisplayCandidateUI .-> DisplayCandidateController
+DisplayCandidateController -> PersistenceContext : repositories()
+PersistenceContext --> RepositoryFactory : create()
+
+RepositoryFactory  --> CandidateRepository : create()
+
+DisplayCandidateController --> GetCandidateService
+GetCandidateService -> CandidateRepository
+
+DisplayCandidateController .--> ApplicationManagementService
+DisplayCandidateController .-> WordAnalysis
+
+@enduml

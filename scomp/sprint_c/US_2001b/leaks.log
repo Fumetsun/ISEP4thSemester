@@ -1,0 +1,62 @@
+==32418== Memcheck, a memory error detector
+==32418== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==32418== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==32418== Command: ./app_file_bot inputDir outputDir 5
+==32418== Parent PID: 32319
+==32418== 
+==32423== 
+==32423== HEAP SUMMARY:
+==32423==     in use at exit: 0 bytes in 0 blocks
+==32423==   total heap usage: 59 allocs, 59 frees, 226,277 bytes allocated
+==32423== 
+==32423== All heap blocks were freed -- no leaks are possible
+==32423== 
+==32423== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==32425== 
+==32425== HEAP SUMMARY:
+==32425==     in use at exit: 0 bytes in 0 blocks
+==32425==   total heap usage: 35 allocs, 35 frees, 113,858 bytes allocated
+==32425== 
+==32425== All heap blocks were freed -- no leaks are possible
+==32425== 
+==32425== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==32420== 
+==32420== HEAP SUMMARY:
+==32420==     in use at exit: 0 bytes in 0 blocks
+==32420==   total heap usage: 3 allocs, 3 frees, 1,107 bytes allocated
+==32420== 
+==32420== All heap blocks were freed -- no leaks are possible
+==32420== 
+==32420== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==32424== 
+==32424== HEAP SUMMARY:
+==32424==     in use at exit: 0 bytes in 0 blocks
+==32424==   total heap usage: 51 allocs, 51 frees, 188,806 bytes allocated
+==32424== 
+==32424== All heap blocks were freed -- no leaks are possible
+==32424== 
+==32424== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==32421== 
+==32421== HEAP SUMMARY:
+==32421==     in use at exit: 0 bytes in 0 blocks
+==32421==   total heap usage: 35 allocs, 35 frees, 113,858 bytes allocated
+==32421== 
+==32421== All heap blocks were freed -- no leaks are possible
+==32421== 
+==32421== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==32422== 
+==32422== HEAP SUMMARY:
+==32422==     in use at exit: 0 bytes in 0 blocks
+==32422==   total heap usage: 51 allocs, 51 frees, 188,803 bytes allocated
+==32422== 
+==32422== All heap blocks were freed -- no leaks are possible
+==32422== 
+==32422== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==32418== 
+==32418== HEAP SUMMARY:
+==32418==     in use at exit: 0 bytes in 0 blocks
+==32418==   total heap usage: 297 allocs, 297 frees, 1,889,808 bytes allocated
+==32418== 
+==32418== All heap blocks were freed -- no leaks are possible
+==32418== 
+==32418== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

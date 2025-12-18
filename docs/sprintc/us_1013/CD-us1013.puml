@@ -1,0 +1,168 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+interface RankingRepository {
+    +findByRef(id: Long): Optional<Ranking>
+    +findAllRankings(): Iterable<Ranking>
+    +setPlaceHolderValues(rankings: Iterable<Ranking>): void
+    +getRankingsofJobOffer(offer: JobOffer): Iterable<Ranking>
+    +rankingOfApplicationJobOffer(refCode: JobRefCode, appRefCode: Integer): Ranking
+    +highestRankingOfJobOffer(offer: JobOffer): Integer
+}
+
+class RankingEventWatchdogController {
+    -rankRepo: RankingRepository
+    -factory: RankingFactory
+    +getHighestRank(jobOffer: JobOffer): Integer
+    +save(rank: Ranking): Ranking
+    +createRanking(domainEvent: DomainEvent, number: Integer): Ranking
+}
+
+class RankingFactory {
+    +createRanking(placementValue: int, application: JobApplication, jobOffer: JobOffer): Ranking
+    +updatePlacement(rank: Ranking, placementValue: int): Ranking
+}
+
+class RankingEventWatchdog {
+    -ctrl: RankingEventWatchdogController
+    +onEvent(domainEvent: DomainEvent): void
+}
+
+
+class RankingEvent {
+    -jobOffer: JobOffer
+    -jobApplication: JobApplication
+    +RankingEvent(offer: JobOffer, application: JobApplication)
+    +getJobApplication(): JobApplication
+    +getJobOffer(): JobOffer
+}
+
+
+class RankingDTO {
+    -jobRefCode: Integer
+    -appRefCode: Integer
+    -applicationInfo: String
+    -placement: Integer
+    +RankingDTO()
+    +RankingDTO(jobRefCode: Integer, appRefCode: Integer, applicationInfo: String, placement: Integer)
+    +getJobRefCode(): Integer
+    +setJobRefCode(jobRefCode: Integer): void
+    +getAppRefCode(): Integer
+    +setAppRefCode(appRefCode: Integer): void
+    +getApplicationInfo(): String
+    +setApplicationInfo(applicationInfo: String): void
+    +getPlacement(): Integer
+    +setPlacement(placement: Integer): void
+    +toString(): String
+}
+
+class Ranking {
+    -rankId: Long
+    -placement: Placement
+    -application: JobApplication
+    -jobOffer: JobOffer
+    +Ranking(placement: Placement, application: JobApplication, jobOffer: JobOffer)
+    +Ranking()
+    +sameAs(other: Object): boolean
+    +identity(): Long
+    +offer(): JobOffer
+    +application(): JobApplication
+    +placement(): Placement
+    +toDTO(): RankingDTO
+    +updatePlacement(placement: Placement): Ranking
+}
+
+class Placement {
+    -value: Integer
+    +Placement(value: int)
+    +Placement()
+    +value(): int
+    +equals(o: Object): boolean
+    +hashCode(): int
+    +toString(): String
+}
+
+
+class ManageRankingUI {
+    -ctrl: ManageRankingController
+    +doShow(): boolean
+    +headline(): String
+}
+
+
+class ManageRankingService {
+    -authz: AuthorizationService
+    -jobOfferRepo: JobOfferRepository
+    -rankRepo: RankingRepository
+    +retrieveMyJobOffers(): Iterable<JobOfferDto>
+    +retriveJobOfferRankings(jobRefCode: Integer): Iterable<RankingDTO>
+    +updateRankings(rankings: Iterable<RankingDTO>): Iterable<RankingDTO>
+}
+
+class JobOffer {
+    -version: Long
+    -jobRefCode: JobRefCode
+    -title: JobTitle
+    -contract: ContractType
+    -mode: JobMode
+    -vacancies: NumberOfVacancies
+    -description: JobDescription
+    -address: Address
+    -customer: Customer
+    -interviewModel: RegisteredPlugin
+    -requirements: RegisteredPlugin
+    -recruitmentProcess: RecruitmentProcess
+    +customer(): Customer
+    +reference(): JobRefCode
+    +title(): JobTitle
+    +recruitmentProcess(): RecruitmentProcess
+    +identity(): JobRefCode
+    +toDTO(): JobOfferDto
+    +setJobRefCode(a: Integer): void
+    +setRequirements(requirements: RegisteredPlugin): void
+    +sameCustomer(customer: Customer): boolean
+    +getInterview(): RegisteredPlugin
+}
+
+class JobApplication {
+    -refCode: Integer
+    -email: ApplicationEmail
+    -filesPath: ApplicationFilesPath
+    -attachedFile: ApplicationAttachedFile
+    -state: ApplicationState
+    -grade: InterviewGrade
+    -joboffer: JobOffer
+    -candidate: Candidate
+    +sameOffer(jobOffer: JobOffer): boolean
+    +getFilePath(): String
+    +addFileRef(file: String): void
+    +getJoboffer(): JobOffer
+    +getCandidate(): Candidate
+    +getState(): ApplicationState
+    +setState(state: ApplicationState): void
+    +getFileRef(): String
+    +setGrade(grade: int): void
+    +getGrade(): int
+    +toString(): String
+}
+
+ManageRankingUI -> ManageRankingController
+ManageRankingController .-> ManageRankingService
+ManageRankingService .-> RankingRepository
+ManageRankingService .-> Ranking
+ManageRankingService .-> RankingFactory
+
+RankingFactory .-> Ranking
+Ranking .-> RankingDTO
+Ranking -- Placement
+Ranking -- JobOffer
+Ranking -- JobApplication
+
+RankingEventWatchdog -> RankingEventWatchdogController
+RankingEventWatchdog .-> RankingEvent
+
+
+
+
+@enduml

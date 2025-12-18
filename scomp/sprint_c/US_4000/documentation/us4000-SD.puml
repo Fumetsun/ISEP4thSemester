@@ -1,0 +1,100 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor CustomerManager as actor
+participant DisplayCandidateUI as ui
+participant DisplayCandidateController as ctrl
+participant GetCandidateService as canSvc
+participant JobApplicationManagementService as appSvc
+participant CandidateRepository as canRepo
+participant WordAnalysis as word
+
+activate actor
+actor -> ui
+ref over ui
+    us-1006
+end ref
+
+
+deactivate actor
+activate ui
+
+ui -> ctrl : getCandidateApplications(candidateNumber)
+deactivate
+activate ctrl
+
+ctrl -> canSvc : getCandidateByPhoneNumber(candidateNumber)
+deactivate ctrl
+activate canSvc
+canSvc -> canRepo : ofIdentity(candidateNumber)
+deactivate canSvc
+activate canRepo
+canRepo --> canSvc : candidate
+deactivate canRepo
+activate canSvc
+canSvc --> ctrl : candidate
+deactivate canSvc
+activate ctrl
+
+
+
+ctrl -> ApplicationManagementService : applicationsOfCandidate(candidate)
+deactivate ctrl
+activate ApplicationManagementService
+ApplicationManagementService -> JobApplicationRepository : applicationsOfCandidate(candidate)
+deactivate ApplicationManagementService
+activate JobApplicationRepository
+JobApplicationRepository --> ApplicationManagementService : applications
+deactivate
+activate ApplicationManagementService
+
+loop for each application
+ApplicationManagementService -> ApplicationManagementService : toDTO()
+activate ApplicationManagementService
+ApplicationManagementService --> ApplicationManagementService : applicationDTO
+deactivate
+
+end loop
+deactivate JobApplicationRepository
+ApplicationManagementService --> ctrl : applicationDTOs
+deactivate ApplicationManagementService
+activate ctrl
+ctrl --> ui : applicationDTOs
+deactivate
+activate ui
+ui --> actor : displays candidate information\n and their applications
+
+deactivate ui
+activate actor
+actor -> ui : selects application
+deactivate actor
+activate ui
+ui -> ctrl : getWordCount(application)
+deactivate ui
+activate ctrl
+
+
+
+ctrl -> word : countWords(files)
+ref over word
+    see "SD-WordAnalysis"
+end ref
+deactivate
+activate word
+
+word --> ctrl : wordAnalysisResults
+deactivate word
+activate ctrl
+ctrl --> ui : wordAnalysisResults
+deactivate ctrl
+activate ui
+ui --> actor : displays results of word analysis
+deactivate ui
+activate actor
+
+
+
+
+@enduml

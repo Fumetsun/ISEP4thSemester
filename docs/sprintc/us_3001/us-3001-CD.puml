@@ -1,0 +1,42 @@
+@startuml
+
+class InAppNotificationHandler {
+        - AuthorizationService authz
+        - short SOCKET_TIMEOUT
+        - NotificationRepository notifRepo
+        - UserRepository userRepo
+        - static int ASS_PORT_NUMBER
+        - static InetAddress serverIP
+        - static Socket sock
+        - String password
+        - String serverIp
+        + InAppNotificationHandler(String password)
+        + Iterable<Notification> getMyNotifications()
+        + static void sendVersionAndCode(ObjectOutputStream sOut, int code)
+        + static void sendCredentials(ObjectOutputStream sOut, String username, String password)
+        + static void closeSocket()
+    }
+
+class CandidateInboxUI {
+        - CandidateInboxController ctrl
+        + boolean doShow()
+        + String headline()
+    }
+
+
+  class CandidateInboxController {
+         + Iterable<Notification> getMyNotifications(String password)
+     }
+class MessageDTO {
+        - static long serialVersionUID
+        - String data
+        + MessageDTO(String data)
+        + String getData()
+        + String toString()
+        + byte[] getBytes()
+    }
+
+    CandidateInboxUI -> CandidateInboxController
+    CandidateInboxController .-> InAppNotificationHandler
+    InAppNotificationHandler .-> MessageDTO
+@enduml

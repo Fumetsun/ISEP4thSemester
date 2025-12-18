@@ -1,0 +1,78 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor "Customer Manager" as CMNGR
+participant ListSortedApplicantsUI
+participant ListSortedApplicantsController
+participant PersistenceContext
+participant RepositoryFactory
+participant ListJobOfferService
+participant ListJobApplicationService
+participant JobOfferRepository
+participant JobApplicationRepository
+
+activate CMNGR
+CMNGR -> ListSortedApplicantsUI : requests to see their job offers
+activate ListSortedApplicantsUI
+ListSortedApplicantsUI -> ListSortedApplicantsController : create()
+activate ListSortedApplicantsController
+ListSortedApplicantsController -> PersistenceContext : repositories()
+deactivate ListSortedApplicantsController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> JobOfferRepository : create()
+RepositoryFactory -> JobApplicationRepository : create()
+deactivate RepositoryFactory
+
+ListSortedApplicantsUI -> ListSortedApplicantsController : jobOfferList()
+deactivate ListSortedApplicantsUI
+activate ListSortedApplicantsController
+ListSortedApplicantsController -> ListJobOfferService : findAllOffersOfCustomer(customer)
+deactivate ListSortedApplicantsController
+activate ListJobOfferService
+ListJobOfferService -> JobOfferRepository : findAllOffersOfCustomer(customer)
+deactivate ListJobOfferService
+activate JobOfferRepository
+JobOfferRepository --> ListJobOfferService : jobOffers
+deactivate JobOfferRepository
+activate ListJobOfferService
+ListJobOfferService --> ListSortedApplicantsController : jobOffers
+deactivate ListJobOfferService
+activate ListSortedApplicantsController
+ListSortedApplicantsController --> ListSortedApplicantsUI : jobOffers
+deactivate ListSortedApplicantsController
+activate ListSortedApplicantsUI
+ListSortedApplicantsUI --> CMNGR : displays job offers
+deactivate ListSortedApplicantsUI
+CMNGR -> ListSortedApplicantsUI : chooses a job offer
+activate ListSortedApplicantsUI
+ListSortedApplicantsUI -> ListSortedApplicantsController : getSortedApplicants(jobOffer)
+deactivate ListSortedApplicantsUI
+activate ListSortedApplicantsController
+ListSortedApplicantsController -> ListJobApplicationService : getApplicationsByJobOffer(jobOffer)
+deactivate ListSortedApplicantsController
+activate ListJobApplicationService
+ListJobApplicationService -> JobApplicationRepository : findApplicationsOfJobOffer(jobOffer)
+deactivate ListJobApplicationService
+
+activate JobApplicationRepository
+JobApplicationRepository --> ListJobApplicationService : applications
+deactivate JobApplicationRepository
+activate ListJobApplicationService
+ListJobApplicationService --> ListSortedApplicantsController : applications
+deactivate ListJobApplicationService
+activate ListSortedApplicantsController
+ListSortedApplicantsController --> ListSortedApplicantsUI : sortedApplications
+deactivate ListSortedApplicantsController
+activate ListSortedApplicantsUI
+
+ListSortedApplicantsUI -> ListSortedApplicantsUI : doShow()
+ListSortedApplicantsUI --> CMNGR
+deactivate ListSortedApplicantsUI
+deactivate CustomerManagerUI
+deactivate CMNGR
+@enduml

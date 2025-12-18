@@ -1,0 +1,59 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant CustomerManagerUI
+participant ListCustomersUI
+participant ListCustomersController
+participant PersistenceContext
+participant RepositoryFactory
+participant CustomerRepository
+participant UserRepository
+
+activate CustomerManagerUI
+CustomerManagerUI -> ListCustomersUI : listCustomers()
+activate ListCustomersUI
+ListCustomersUI -> ListCustomersController : create()
+
+activate ListCustomersController
+ListCustomersController -> PersistenceContext : repositories()
+deactivate ListCustomersController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> CustomerRepository : create()
+RepositoryFactory -> UserRepository : create()
+deactivate RepositoryFactory
+
+ListCustomersUI -> ListCustomersController : showCustomers()
+deactivate ListCustomersUI
+activate ListCustomersController
+
+note right
+I still need to check if this will be done using the customers
+"email" or some database functionality
+end note
+
+ListCustomersController -> CustomerRepository : getCustomers()
+deactivate ListCustomersController
+activate CustomerRepository
+CustomerRepository --> ListCustomersController : customers
+deactivate CustomerRepository
+activate ListCustomersController
+ListCustomersController --> ListCustomersUI : customers
+activate ListCustomersUI
+ListCustomersController -> UserRepository : getUserCustomers(customers)
+deactivate ListCustomersController
+activate UserRepository
+UserRepository --> ListCustomersController : userCustomers
+deactivate UserRepository
+activate ListCustomersController
+ListCustomersController --> ListCustomersUI : userCustomers
+deactivate ListCustomersController
+ListCustomersUI --> CustomerManagerUI
+
+
+deactivate ListCustomersUI
+@enduml

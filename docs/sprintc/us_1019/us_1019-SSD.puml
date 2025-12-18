@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+actor "Customer Manager" as CMNGR
+participant System
+
+activate CMNGR
+CMNGR -> System: Requests to see their job offers
+activate System
+System --> CMNGR: Displays job offers to Customer manager
+deactivate System
+CMNGR -> System: Chooses one of the job offers
+activate System
+System --> CMNGR: Displays all candidates descending by interview grade
+deactivate System
+@enduml

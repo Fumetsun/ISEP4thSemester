@@ -1,0 +1,48 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class CheckNewNotificationsWatchdog{
+    +onEvent(DomainEvenet event)
+}
+
+class CheckNewNotificationsWatchdogController{
+    +checkForNotifications(String password)
+}
+
+class CheckNotificationsHandler{
+    - password : String
+    +checkNotifications() : boolean
+}
+
+CheckNewNotificationsWatchdog -down> CheckNewNotificationsWatchdogController
+CheckNewNotificationsWatchdogController .-> CheckNotificationsHandler
+
+
+class CandidateInboxUI{}
+
+class CandidateInboxController{
+    +getMyNotifications{String password}
+}
+
+class InAppNotificationHandler{
+    +sendVersion()
+    +sendCredentials()
+    +sendInboxCode()
+    +getMyNotifications()
+}
+
+class MessageDTO{
+    -data : String
+
+    +getData()
+}
+
+
+
+CandidateInboxUI -> CandidateInboxController
+CandidateInboxController .-> InAppNotificationHandler
+CheckNotificationsHandler .-> MessageDTO
+
+
+
+@enduml

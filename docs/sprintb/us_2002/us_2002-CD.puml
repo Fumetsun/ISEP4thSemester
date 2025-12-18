@@ -1,0 +1,161 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+class RegisterApplicationController{
+        +getData()
+        +registerApplication(candidateOption, JobOfferOption)
+}
+
+class PersistenceContext {
+    + repositories()
+}
+
+class JobApplication{
+    -ApplicationRefCode
+    -ApplicationAttachedFilesPath
+    -ApplicationEmail
+    -ApplicationAttachedFile
+    -JobOffer
+    -Candidate
+}
+
+class CandidateDTO{
+    -PhoneNumber : String
+    -UserInfo : String
+
+
+    +getPhoneNumber()
+    +getUserInfo()
+}
+
+class JobOfferDTO{
+    -refcode : String
+    -jobTitle : String
+    -jobMode : String
+    -nrVacancies : String
+
+    +getrefcode()
+    +getjobTitle()
+    +getjobMode()
+    +getnrVacancies()
+}
+
+class RepositoryFactory {
+	+ newTransactionalContext()
+    + users(TransactionalContext var1)
+    + users()
+    + signupRequests(TransactionalContext var1)
+    + signupRequests()
+}
+
+class CandidateRepository{
+    - autoTx: TransactionalContext
+    +findAll()
+    +findByNumber()
+}
+
+class JobOfferRepository{
+    - autoTx: TransactionalContext
+    + JpaJobOfferRepository(autoTx: TransactionalContext)
+    + findByRef(ref: Reference)
+    + findByCustomer(customer: name)
+}
+class CandidateService {
+    - authz : AuthorizationService
+    - repo : ClientUserRepository
+    + findClientUserByMecNumber : Optional<ClientUser>
+    + findClientUserByUsername : Optional<ClientUser>
+}
+
+class JobApplicationManagementService{
+    - authz : AuthorizationService
+    - repo : ApplicationRepository
+    +getData()
+    +registerApplication(candidateOption, JobOfferOption)
+}
+
+class ApplicationRepository{
+    - autoTx: TransactionalContext
+        + JpaApplicationRepository(autoTx: TransactionalContext)
+        + findByRef(ref: Reference)
+        + findByCandidate(candidate: name)
+        +findByCustomer(customer: name)
+}
+
+class RegisterJobOfferService{
+    -authz : AuthorizationService
+    - repo :PersistenceContext
+    + addJobOffer(jobOffer)
+}
+
+class CandidateFactory {
+	- number : MecanographicNumber
+	- user : SystemUser
+	+ newCandidate(user, number) : Candidate
+}
+
+
+
+class ApplicationBuilder{
+    +build()
+    +withJobOffer(JobOffer jobOffer)
+    +withCandidate(Candidate candidate)
+}
+
+class Candidate {
+        - version: Long
+        - num: PhoneNumber
+        - user: SystemUser
+        + equals(o: Object): boolean
+        + hashCode(): int
+        + sameAs(other: Object): boolean
+        + identity(): PhoneNumber
+        + associatedUser(): SystemUser
+        + toDTO(): CandidateDto
+        + toString(): String
+}
+
+class JobOffer {
+        - version: Long
+        - jobRefCode: JobRefCode
+        - title: JobTitle
+        - contract: ContractType
+        - mode: JobMode
+        - vacancies: NumberOfVacancies
+        - description: JobDescription
+        - address: Address
+        + equals(o: Object): boolean
+        + hashCode(): int
+        + sameAs(other: Object): boolean
+        + reference(): JobRefCode
+        + identity(): JobRefCode
+        + toDTO(): JobOfferDto
+        + toString(): String
+        }
+
+class RegisterApplicationUI{
+    +doShow()
+    -isInteger()
+}
+
+JobOfferRepository .-> JobOffer
+CandidateRepository .-> Candidate
+JobOffer -> JobOfferDTO : create()
+Candidate -> CandidateDTO : create()
+JobApplicationManagementService .-> ApplicationRepository
+JobApplicationManagementService .-> JobApplication
+ApplicationRepository -> JobApplication
+RegisterApplicationController .-> ApplicationBuilder : build()
+RegisterApplicationUI -> RegisterApplicationController : create()
+RegisterApplicationController .-> PersistenceContext
+PersistenceContext .-> RepositoryFactory : create()
+RegisterApplicationController .-> JobApplicationManagementService
+JobApplicationManagementService .-> CandidateService
+CandidateService .-> CandidateFactory
+CandidateService .-> CandidateRepository
+JobApplicationManagementService .-> RegisterJobOfferService
+RegisterJobOfferService .-> JobOfferRepository
+JobApplicationManagementService .-> CandidateRepository
+JobApplicationManagementService .-> JobOfferRepository
+@enduml

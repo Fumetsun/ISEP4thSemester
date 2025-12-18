@@ -1,0 +1,53 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US3002 - List Customer Job Offers - SD
+
+autonumber
+
+actor Customer as actor
+participant ListCustomerOffersUI as UI
+participant ListCustomerOffersController as CTRL
+participant ServerCustomerOffersHandler as HANDLER
+participant FollowUpServer as SERVER
+
+
+
+activate actor
+actor -> UI : requests to see their job offers
+activate UI
+UI -> CTRL : create()
+UI --> actor : requests for identity verification
+deactivate UI
+actor -> UI : inputs requested info
+activate UI
+UI -> CTRL : displayOffers(password)
+deactivate UI
+activate CTRL
+CTRL -> HANDLER : create(password)
+CTRL -> HANDLER : getMyOffers()
+deactivate CTRL
+activate HANDLER
+HANDLER -> SERVER
+deactivate HANDLER
+
+ref over SERVER
+    Refer to us-3002-SD-server-interaction
+end ref
+
+activate SERVER
+autonumber 14
+SERVER --> HANDLER : jobOffers
+deactivate SERVER
+activate HANDLER
+HANDLER --> CTRL : jobOffers
+deactivate HANDLER
+activate CTRL
+CTRL --> UI : jobOffers
+deactivate CTRL
+activate UI
+UI -> UI : displayReceivedOffers(jobOffers)
+UI --> actor :
+deactivate UI
+
+@enduml

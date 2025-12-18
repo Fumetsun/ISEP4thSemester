@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant JobApplicationNotificationEventWatchdog as watchdog
+participant JobApplicationNotificationWatchdogController as ctrl
+participant NotificationFactory as factory
+participant NotificationRepository as repo
+
+autonumber
+
+-> watchdog : publish(event)
+activate watchdog
+watchdog -> ctrl** : create
+watchdog -> ctrl : createNotification(event)
+deactivate watchdog
+activate ctrl
+ctrl -> factory** : create()
+ctrl -> factory : newNotification(event.getReceiver(), event.getSender(), \nevent.getNotifInfo(), NotificationTypes.IN_APP)
+deactivate ctrl
+activate factory
+factory --> ctrl : notification
+deactivate factory
+activate ctrl
+ctrl --> watchdog : notification
+deactivate ctrl
+activate watchdog
+watchdog -> repo : save(notification)
+deactivate watchdog
+activate repo
+repo --> watchdog
+deactivate repo
+activate watchdog
+
+
+
+
+@enduml

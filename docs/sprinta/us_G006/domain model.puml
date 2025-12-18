@@ -1,0 +1,216 @@
+@startuml
+'https://plantuml.com/class--diagram
+
+
+
+
+
+Class Address  <<(V,#f04800) value Object>>{
+
+    }
+
+
+
+
+package UserAggregate{
+Entity LanguageEngineer {
+        <<entity>>
+    }
+Entity Admin {
+    <<entity>>
+}
+Entity CustomerManager {
+    <<entity>>
+}
+Entity Operator {
+    <<entity>>
+}
+Entity Customer {
+    <<entity>>
+}
+Entity Candidate {
+    <<entity>>
+}
+    class EmailAddress <<(V,#f04800) value Object>> {}
+    Entity User {
+        <<root entity>>
+    }
+
+    Class Username <<(V,#f04800) value Object>> {
+
+    }
+    Class Role  <<(V,#f04800) value Object>>{
+
+    }
+    Class Name <<(V,#f04800) value Object>> {
+
+    }
+    Class PhoneNumber <<(V,#f04800) value Object>> {
+
+        }
+}
+
+package JobOfferAggregate{
+
+Class JobRequirementSpecification <<(V,#f04800) value Object>> {
+
+}
+Entity JobOffer {
+    <<root entity>>
+}
+
+Class JobReference <<(V,#f04800) value Object>> {
+
+}
+Class InterviewModel <<(V,#f04800) value Object>> {
+
+}
+Class JobTitle <<(V,#f04800) value Object>> {
+
+}
+Class ContractType  <<(V,#f04800) value Object>>{
+
+}
+Class JobMode <<(V,#f04800) value Object>> {
+
+}
+Class NumberOfVacancies <<(V,#f04800) value Object>> {
+
+}
+Class Description <<(V,#f04800) value Object>> {
+
+}
+
+
+}
+
+Package EntityAggregate{
+    Entity Entity {
+        <<root entity>>
+    }
+
+Class CompanyName <<(V,#f04800) value Object>> {
+
+             }
+             Class CompanyCode <<(V,#f04800) value Object>> {
+
+                             }
+
+}
+
+Package RecruitmentProcessAggregate{
+    Entity RecruitmentProcess {
+            <<root entity>>
+        }
+
+    Entity RecruitmentPhase {
+            <<entity>>
+        }
+    Class RecruitmentProcessTimeFrame <<(V,#f04800) value Object>> {
+
+                    }
+
+    Class RecruitmentPhaseType <<(V,#f04800) value Object>> {
+
+                        }
+
+    Class RecruitmentPhaseDescription <<(V,#f04800) value Object>> {
+
+                        }
+    Class RecruitmentPhaseTimeFrame <<(V,#f04800) value Object>> {
+
+                        }
+}
+
+Package ApplicationAggregate{
+
+
+        Entity Interview  {
+            <<entity>>
+                }
+
+        Entity Application  {
+            <<root entity>>
+        }
+        Class InterviewTimeFrame <<(V,#f04800) value Object>> {
+
+               }
+        Class InterviewSpecifications <<(V,#f04800) value Object>> {
+
+               }
+       Class ApplicationAttachedFile <<(V,#f04800) value Object>> {
+
+       }
+       Class ApplicationAttachedFilesLocation <<(V,#f04800) value Object>> {
+
+              }
+
+       Class ApplicationEmail <<(V,#f04800) value Object>> {
+
+              }
+
+}
+Class InterviewAssessment <<(V,#0000FF) value Service>> {
+
+}
+
+Class RequirementsAssessment <<(V,#0000FF) value Service>> {
+
+}
+
+JobOffer .-> InterviewAssessment
+InterviewAssessment .-> Application
+
+JobOffer .-> RequirementsAssessment
+RequirementsAssessment .-> Application
+
+JobOffer "1" --> "1" RecruitmentProcess : "executes"
+RecruitmentProcess "1" --o "*" RecruitmentPhase
+RecruitmentProcess "1" --o "1" RecruitmentProcessTimeFrame
+RecruitmentPhase "1" -o "1" RecruitmentPhaseType
+RecruitmentPhase "1" --o "1" RecruitmentPhaseDescription
+RecruitmentPhase "1" --o "1" RecruitmentPhaseTimeFrame
+Operator "*" - "1" Application : manages
+Operator "1" -- "*" Candidate : registers
+Application "*" --> "1" JobOffer : pertains to
+User "1" ---o "1" PhoneNumber
+LanguageEngineer --|> User
+Application "1" ----o "1" ApplicationEmail : contains
+Application "1" ----o "*" ApplicationAttachedFile : contains
+Application "1" ----o "1" ApplicationAttachedFilesLocation : contains
+Candidate "1" ----- "*" Application
+Application "1" --o "*" Interview : may contain
+Interview "1" --o "1" InterviewSpecifications : contains
+Interview "1" --o "1" InterviewTimeFrame : contains
+
+
+Entity "1" --o "1" CompanyName
+Entity "1" --o "1" CompanyCode
+User "1" ----o "1" EmailAddress
+User "1" ----o "1" Address
+Entity "1" ----o "1" Address
+JobOffer "1" <- "1" Entity : "posts"
+User "1" ----o "1" Role
+User "1" ----o "1" Username
+User "1" ----o "1" Name
+JobOffer "1" ----o "1" JobReference
+JobOffer "1" ----o "1" JobTitle
+JobOffer "1" ----o "1" ContractType
+JobOffer "1" ----o "1" JobMode
+JobOffer "1" ----o "1" NumberOfVacancies
+JobOffer "1" ----o "1" Description
+Admin  ----|> User
+CustomerManager ---|> User
+CustomerManager "1" ----> "*" Entity : manages
+CustomerManager "1" -- "*" Customer : manages
+CustomerManager "1" -- "*" JobOffer : registers
+Operator ----|> User
+Customer --|> User
+Candidate --|> User
+Admin "1" --> "1" User : manages
+Customer <---- JobOffer : requests creation
+CustomerManager -- Candidate : selects
+
+JobOffer "1" ----o "1" JobRequirementSpecification
+JobOffer "1" ----o "1" InterviewModel
+@enduml

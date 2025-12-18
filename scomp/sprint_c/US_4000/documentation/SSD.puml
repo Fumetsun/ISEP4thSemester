@@ -1,0 +1,32 @@
+@startuml
+
+autonumber
+
+actor CustomerManager as actor
+participant System as sys
+
+activate actor
+actor -> sys : requests to view candidate information
+deactivate actor
+activate sys
+sys --> actor : presents candidate options
+deactivate sys
+activate actor
+actor -> sys : selects candidate
+deactivate actor
+activate sys
+sys --> actor : shows candidate information and applications
+deactivate sys
+activate actor
+
+actor -> sys : selects application
+deactivate actor
+activate sys
+sys --> actor : shows word analysis of application
+deactivate sys
+activate actor
+
+
+
+
+@enduml

@@ -1,0 +1,10 @@
+Programmer
+<SCANS>|What is your level of education? (A - High School) (B - Bachelor) (C - Master) (D - Doctor) (Choose one)|(B)_10
+<TFANS>|You would say you are a good colleague. (T/F)|True_10
+<MCANS>|Which of the following languages are you experienced in? (A - Java) (B - React) (C - Python) (D - Rust) (Choose however many)|A_5|B_5|C_5|D_5
+<INTANS>|How many career years do you have under your belt?|8_15
+<DECANS>|What percentage of your time do you spend on coding compared to other tasks, such as debugging, code reviews, and meetings? (0-1, 76% = 0.76)|0.6_10
+<DATEANS>|What is your date of birth? (dd/MM/yyyy)|15/07/1990_10
+<TIMEANS>|What time can you come in during the civil work week, Monday through Friday? (HH:mm)|08:00_5
+<NUMANS>|On a scale of 1 to 10, how comfortable overall are you with your proficiency in the languages you listed above, in a range of 3? (Example: 7-9)|6:8_5
+<TEXTANS>|Can you describe yourself in 5 words or less? (Text Answer - Format: Word, Word, Word.)|Diligent_5|Alert_5

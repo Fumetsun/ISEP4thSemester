@@ -1,0 +1,29 @@
+@startuml Domain_Model_excerpt_US2000a
+
+Package UserAggregate {
+	Entity Operator {
+		<<entity>>
+	}
+	Entity User {
+		<<root entity>>
+	}
+    Class EmailAddress <<(V,#f09000) Identifier value Object>> {}
+    Class Password <<(V,#f04800) value Object>> { }
+    Class Role  <<(V,#f04800) value Object>> { }
+    Class Name <<(V,#f04800) value Object>> { }
+}
+Package CandidateAggregate{
+    Entity Candidate {
+        <<root entity>>
+    }
+    Class CandidatePhoneNumber <<(V,#f09000) Identity value Object>> { }
+}
+
+CandidatePhoneNumber .- Candidate : > identifies
+Operator --|> User
+Candidate -|> User
+User "1" --- "1" EmailAddress
+User "1" --- "1" Password
+User "1" --- "1" Role
+User "1" --- "1" Name
+@enduml

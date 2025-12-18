@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant WordAnalysis as word
+participant WordCounterThread as counter
+
+-> word : countWords(files)
+activate word
+
+loop for each file
+
+loop for each time file size passes threshold
+
+word -> counter** : create(filePath, begin, end)
+
+
+
+end loop
+end loop
+
+
+loop for each thread created
+
+word -> counter : join()
+deactivate word
+activate counter
+counter --> word
+deactivate counter
+activate word
+
+end loop
+
+<-- word : wordAnalysisResults
+deactivate word
+@enduml

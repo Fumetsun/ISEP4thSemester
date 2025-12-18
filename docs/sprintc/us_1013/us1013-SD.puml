@@ -1,0 +1,155 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+autonumber
+
+actor CustomerManager as cm
+participant ManageRankingUI as ui
+participant ManageRankingController as ctrl
+participant ManageRankingService as svc
+participant PersistenceContext
+participant RepositoryFactory
+participant AuthorizationService as authSvc
+participant JobOfferRepository as jobRepo
+participant RankingRepository as rankRepo
+
+
+
+
+
+activate cm
+cm -> ui : requests to rank clients
+deactivate cm
+activate ui
+
+ui -> ctrl : retrieveMyJobOffers()
+deactivate ui
+activate ctrl
+ctrl -> svc : retrieveMyJobOffers()
+deactivate ctrl
+activate svc
+svc -> authSvc : loggInUserWithPermissions(BaseRoles.CUSTOMER_MANAGER)
+deactivate svc
+activate authSvc
+authSvc --> svc : user
+deactivate authSvc
+activate svc
+svc -> jobRepo : getJobOffersOfCustomerManager(user)
+deactivate svc
+activate jobRepo
+jobRepo --> svc : jobOffers
+deactivate jobRepo
+activate svc
+
+loop for each job offer
+svc -> svc : jobOfffer.toDTO()
+end loop
+
+svc --> ctrl : jobsOffers
+deactivate svc
+activate ctrl
+ctrl --> ui : jobOffers
+deactivate ctrl
+activate ui
+ui --> cm : presents job offer list
+deactivate ui
+activate cm
+cm -> ui : selects job offer
+deactivate cm
+activate ui
+
+
+
+ui -> ctrl : retrieveJobOfferRanking(option)
+deactivate ui
+activate ctrl
+ctrl -> svc : retrieveJobOfferRanking(option)
+deactivate ctrl
+activate svc
+svc -> jobRepo : getRankingsOfJobOffer(jobRefCode)
+deactivate svc
+activate jobRepo
+jobRepo --> svc : rankings
+deactivate jobRepo
+activate svc
+
+
+loop for each ranking
+svc -> svc : ranking.toDTO()
+end loop
+
+svc --> ctrl : rankings
+deactivate svc
+activate ctrl
+ctrl --> ui : rankings
+deactivate ctrl
+activate ui
+
+
+
+
+
+
+ui --> cm : presents current
+deactivate ui
+activate cm
+loop for every candidate position changed
+
+cm -> ui : picks candidates to swap positions
+deactivate cm
+activate ui
+ui --> cm : returns new ranking
+deactivate ui
+activate cm
+
+end
+
+cm -> ui : confirms ranking
+deactivate cm
+activate ui
+
+ui -> ctrl : updateRanking(rankings)
+deactivate ui
+activate ctrl
+ctrl -> svc : updateRanking(rankings)
+deactivate ctrl
+activate svc
+svc -> rankRepo : save(rankings)
+
+ref over rankRepo
+    See US-1013-REPO-SD
+end ref
+
+deactivate svc
+
+activate rankRepo
+rankRepo --> svc : rankings
+deactivate rankRepo
+activate svc
+
+
+loop for each ranking
+svc -> svc : ranking.toDTO()
+end loop
+
+svc --> ctrl : rankings
+deactivate svc
+activate ctrl
+
+ctrl -> ui : rankings
+deactivate ctrl
+activate ui
+
+ui -> cm  : operation success message
+deactivate ui
+activate cm
+
+
+
+
+
+
+
+
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+Package PluginAggregate{
+    Entity RegisteredPlugin  {
+        <<root entity>>
+    }
+
+    Class PluginFileName <<(V,#f09000) Identifier value Object>> {
+
+           }
+
+    Class PluginName <<(V,#f04800) value Object>> {
+
+           }
+
+    Class PluginType <<(V,#f04800) value Object>> {
+
+           }
+}
+
+RegisteredPlugin -- PluginFileName : locates <
+RegisteredPlugin -- PluginName : identifies <
+RegisteredPlugin -- PluginType : classifies <
+
+
+@enduml

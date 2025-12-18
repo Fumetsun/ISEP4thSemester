@@ -1,0 +1,44 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant Client
+participant Server
+participant Database
+
+activate Client
+Client -> Server : requests connection
+deactivate Client
+activate Server
+Server --> Client : accepts connection
+deactivate Server
+activate Client
+Client -> Server : sends authentication request
+deactivate Client
+activate Server
+Server -> Database : queries database for information about user
+deactivate Server
+activate Database
+Database --> Server : information
+deactivate Database
+activate Server
+
+alt if authentication successful
+Server --> Client : sends success
+activate Client
+deactivate Server
+
+else  if authentication not successful
+
+Server --> Client : sends failure message
+activate Server
+Server --> Client : closes socket
+deactivate Server
+activate Client
+
+end
+
+
+
+@enduml

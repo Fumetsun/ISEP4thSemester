@@ -1,0 +1,54 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+Package RequirementsSpecification{
+
+    Entity RequirementSpecification  {
+        <<root entity>>
+    }
+
+    Class RequirementSpecificationDescription <<(V,#f04800) value Object>> {}
+    Class RequirementSpecificationAnswer <<(V,#f04800) value Object>> {}
+    Class RequirementSpecificationRefCode <<(V,#f09000) Identifier value Object>> {}
+}
+
+Package InterviewAggregate{
+    Entity InterviewModel  {
+        <<root entity>>
+    }
+
+    Class InterviewModelRefCode <<(V,#f09000) Identifier value Object>> {}
+    Class InterviewTimeFrame <<(V,#f04800) value Object>> {}
+    Class InterviewSpecifications <<(V,#f04800) value Object>> {}
+    Class InterviewQuestion <<(V,#f04800) value Object>> {}
+    Class InterviewAnswer <<(V,#f04800) value Object>> {}
+    Class AnswerRatings <<(V,#f04800) value Object>> {}
+}
+
+Package PluginAggregate{
+    Entity RegisteredPlugin  {
+        <<root entity>>
+    }
+
+    Class PluginFileName <<(V,#f09000) Identifier value Object>> {}
+    Class PluginName <<(V,#f04800) value Object>> {}
+    Class PluginType <<(V,#f04800) value Object>> {}
+}
+
+InterviewModel "1" -- "1" InterviewSpecifications : > contains
+InterviewModel "1" -- "1" InterviewTimeFrame : > contains
+InterviewModel "1" -- "*" InterviewQuestion : < describes
+InterviewModel "1" -- "*" InterviewModelRefCode : < identifies
+InterviewModel "1" -- "1" RegisteredPlugin : "configures" <
+InterviewQuestion - InterviewAnswer : fills <
+InterviewQuestion -- AnswerRatings : grades >
+
+RequirementSpecification "1" -- "1" RequirementSpecificationDescription : "describes" <
+RequirementSpecification "1" -- "1" RequirementSpecificationRefCode : "identifies" <
+RequirementSpecificationAnswer "*" -- "1" RequirementSpecification : "describes" >
+RequirementSpecification "1" -- "1" RegisteredPlugin : "configures" <
+
+RegisteredPlugin -- PluginFileName : locates <
+RegisteredPlugin -- PluginName : identifies <
+RegisteredPlugin -- PluginType : classifies
+@enduml

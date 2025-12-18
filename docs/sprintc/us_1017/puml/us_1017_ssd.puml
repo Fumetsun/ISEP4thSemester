@@ -1,0 +1,34 @@
+@startuml US1017_SSD
+
+title System Sequence Diagram - US 1017
+
+autonumber
+
+actor "Customer Manager" as cm
+participant ":Application" as app
+
+activate cm
+
+	cm -> app : asks to upload candidate responses
+	activate app
+		app --> cm : shows a list of job offers associated\nwith that Customer Manager
+	deactivate app
+
+	cm -> app : picks one
+	activate app
+		app --> cm : request reponses file
+	deactivate app
+
+	cm -> app : enters path to file
+	activate app
+		app --> cm : shows applications to that job offer
+	deactivate app
+
+	cm -> app : picks one
+	activate app
+		app --> cm : confirms success
+	deactivate
+
+deactivate cm
+
+@enduml

@@ -1,0 +1,13 @@
+-Lifeguard Interview Model-
+
+1- In your experience you would say that a drowning person is not dangerous to the lifeguard. (T/F) <TFANS>
+R: True
+
+2- What is your date of birth? (dd/MM/yyyy) <DATEANS>
+R: 12/04/2004
+
+3- What time can you come in during the civil work week, Monday through Friday? (HH:mm) <TIMEANS>
+R: 07:00
+
+4- Can you describe yourself in 5 words or less? (Text Answer - Format: Word, Word, Word.) <TEXTANS>
+R: Swimmer, Dilligent.

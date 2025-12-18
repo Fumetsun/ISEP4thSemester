@@ -1,0 +1,82 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class CustomerManagerUI {
+    +doShow()
+}
+
+class UpdateJobRequirementUI {
+    +doShow()
+}
+
+class UpdateJobRequirementController {
+    +getPlugins()
+    +getOffers()
+    +updateJobOffer(jobOffer, plugin)
+}
+
+class ManagePluginService {
+    +allJobRequirements()
+}
+
+class RegisteredPluginRepository {
+    +findALl()
+    +findAllInterview()
+    +findAllJobRequirement()
+    +findWithId(identifier)
+}
+
+class RegisterJobOfferService {
+    +getOffers()
+    +updateJobOffer(jobOffer, plugin)
+}
+
+class JobOfferRepository {
+    +findAllOffers()
+    +updateJobOffer(jobOffer, plugin)
+}
+
+class PersistenceContext{
+    +repositories()
+}
+
+class RepositoryFactory{
+
++newTransactionalContext();
+    + users(TransactionalContext var1);
+    + users();
+    + clientUsers(TransactionalContext var1);
+    + clientUsers();
+    + signupRequests(TransactionalContext var1);
+    + signupRequests();
+
+    }
+
+    class RegisteredPluginDTO {
+            -fileName: String
+            -pluginName: String
+            -pluginType: String
+            -folderPath: String
+
+            +RegisteredPluginDTO(fileName: String, pluginName: String, pluginType: String, folderPath: String)
+            +toString(): String
+            +getFileName(): String
+            +getFolderPath(): String
+            +getPluginName(): String
+            +getPluginType(): String
+        }
+
+
+CustomerManagerUI -> UpdateJobRequirementUI
+ManagePluginService .-> RegisteredPluginDTO
+ManagePluginService .-> RegisteredPluginRepository
+RegisterJobOfferService .--> JobOfferRepository
+UpdateJobRequirementUI -> UpdateJobRequirementController
+UpdateJobRequirementController .-> ManagePluginService
+UpdateJobRequirementController .-> RegisterJobOfferService
+UpdateJobRequirementController .-> PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+RepositoryFactory -> JobOfferRepository
+RepositoryFactory -> RegisteredPluginRepository
+
+@enduml

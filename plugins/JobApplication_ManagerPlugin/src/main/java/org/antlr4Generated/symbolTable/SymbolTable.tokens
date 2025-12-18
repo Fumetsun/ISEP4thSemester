@@ -1,0 +1,10 @@
+T__0=1
+T__1=2
+QUEST_TYPE_SYMBOL=3
+NUMBER=4
+TEXT=5
+LETTER=6
+WS=7
+NL=8
+'|'=1
+'_'=2

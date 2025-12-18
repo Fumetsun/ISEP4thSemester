@@ -1,0 +1,139 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor CustomerManager
+participant CustomerManagerUI
+participant ChangeJobOfferPhaseUI
+participant ChangeJobOfferPhaseController
+participant AuthorizationService
+participant ListJobOfferService
+participant JobOfferRepository
+participant RecruitmentProcessPhaseHandler
+participant RecruitmentProcessRepositoryHandler
+
+participant RecruitmentProcessRepository
+
+activate CustomerManager
+CustomerManager -> CustomerManagerUI : change joboffer phase
+    activate CustomerManagerUI
+    CustomerManagerUI -> ChangeJobOfferPhaseUI : changeJobOfferPhase()
+        activate ChangeJobOfferPhaseUI
+        ChangeJobOfferPhaseUI -> ChangeJobOfferPhaseController : create()
+            activate ChangeJobOfferPhaseController
+                group Repository creation process (team-planning-decisions.md)
+                ChangeJobOfferPhaseController -> ChangeJobOfferPhaseController : repositories()
+                end group
+            deactivate ChangeJobOfferPhaseController
+        ChangeJobOfferPhaseUI -> ChangeJobOfferPhaseController : getJobOffers()
+        deactivate ChangeJobOfferPhaseUI
+            activate ChangeJobOfferPhaseController
+            ChangeJobOfferPhaseController -> AuthorizationService : loggedinUserWithPermissions(BaseRoles.CUSTOMERMANAGER)
+            deactivate ChangeJobOfferPhaseController
+                activate AuthorizationService
+                AuthorizationService -> ChangeJobOfferPhaseController : loggedUser
+                deactivate AuthorizationService
+            activate ChangeJobOfferPhaseController
+            ChangeJobOfferPhaseController -> ListJobOfferService : getJobOffersOfManager(loggedUser)
+            deactivate ChangeJobOfferPhaseController
+                activate ListJobOfferService
+                ListJobOfferService -> JobOfferRepository : getJobOffersOfManager(loggedUser)
+                deactivate ListJobOfferService
+                    activate JobOfferRepository
+                    JobOfferRepository --> ListJobOfferService : jobOffers
+                    deactivate JobOfferRepository
+                activate ListJobOfferService
+                ListJobOfferService --> ChangeJobOfferPhaseController : jobOffersDTO
+                deactivate ListJobOfferService
+            activate ChangeJobOfferPhaseController
+            ChangeJobOfferPhaseController --> ChangeJobOfferPhaseUI : jobOffersDTO
+            deactivate ChangeJobOfferPhaseController
+        activate ChangeJobOfferPhaseUI
+        ChangeJobOfferPhaseUI --> CustomerManager : requests jobOffer
+        deactivate ChangeJobOfferPhaseUI
+
+    CustomerManager -> ChangeJobOfferPhaseUI : selects jobOffer
+        activate ChangeJobOfferPhaseUI
+        ChangeJobOfferPhaseUI -> ChangeJobOfferPhaseController : getRecruitmentProcess(selectedJobOffer)
+        deactivate ChangeJobOfferPhaseUI
+            activate ChangeJobOfferPhaseController
+            ChangeJobOfferPhaseController -> RecruitmentProcessRepositoryHandler : getRecruitmentProcessByRef(referenceCode)
+            deactivate ChangeJobOfferPhaseController
+                activate RecruitmentProcessRepositoryHandler
+                RecruitmentProcessRepositoryHandler -> RecruitmentProcessRepository : getRecruitmentProcessByRef(referenceCode)
+                deactivate RecruitmentProcessRepositoryHandler
+                    activate RecruitmentProcessRepository
+                    RecruitmentProcessRepository --> RecruitmentProcessRepositoryHandler : recruitmentProcess
+                    deactivate RecruitmentProcessRepository
+                activate RecruitmentProcessRepositoryHandler
+                RecruitmentProcessRepositoryHandler --> ChangeJobOfferPhaseController : recruitmentProcess
+                deactivate RecruitmentProcessRepositoryHandler
+            activate ChangeJobOfferPhaseController
+            ChangeJobOfferPhaseController --> ChangeJobOfferPhaseUI : recruitmentProcess
+            deactivate ChangeJobOfferPhaseController
+        activate ChangeJobOfferPhaseUI
+
+        ChangeJobOfferPhaseUI -> ChangeJobOfferPhaseUI : showAllJobOfferPhases(selectedJobOffer)
+        ChangeJobOfferPhaseUI --> CustomerManager : requests recruitmentProcess action
+        deactivate ChangeJobOfferPhaseUI
+
+CustomerManager -> ChangeJobOfferPhaseUI : selects if it wants to increase \nor decrease phase
+
+        activate ChangeJobOfferPhaseUI
+        alt Increment phase
+            ChangeJobOfferPhaseUI -> ChangeJobOfferPhaseController : incrementPhase(selectedJobOffer)
+            deactivate ChangeJobOfferPhaseUI
+                activate ChangeJobOfferPhaseController
+                ChangeJobOfferPhaseController -> RecruitmentProcessPhaseHandler : incrementPhase(selectedJobOffer)
+                deactivate ChangeJobOfferPhaseController
+                    activate RecruitmentProcessPhaseHandler
+                    RecruitmentProcessPhaseHandler -> RecruitmentProcessPhaseHandler : checkIfIsLastPhase()
+                    alt If not
+                        RecruitmentProcessPhaseHandler -> RecruitmentProcessRepositoryHandler : updateCurrentPhase(recruitmentProcess, newPhase)
+                        deactivate RecruitmentProcessPhaseHandler
+                            activate RecruitmentProcessRepositoryHandler
+                            RecruitmentProcessRepositoryHandler -> RecruitmentProcessRepository : save()
+                            RecruitmentProcessRepositoryHandler --> RecruitmentProcessPhaseHandler : operationSuccess
+                            deactivate RecruitmentProcessRepositoryHandler
+                        activate RecruitmentProcessPhaseHandler
+                    end alt
+                        RecruitmentProcessPhaseHandler --> ChangeJobOfferPhaseController : operationSuccess
+                        deactivate RecruitmentProcessPhaseHandler
+                    activate ChangeJobOfferPhaseController
+                    ChangeJobOfferPhaseController -> ChangeJobOfferPhaseUI : operationSuccess
+                    deactivate ChangeJobOfferPhaseController
+                activate ChangeJobOfferPhaseUI
+        else Decrement phase
+            ChangeJobOfferPhaseUI -> ChangeJobOfferPhaseController : decreasePhase(selectedJobOffer)
+            deactivate ChangeJobOfferPhaseUI
+                activate ChangeJobOfferPhaseController
+                ChangeJobOfferPhaseController -> RecruitmentProcessPhaseHandler : decreasePhase(selectedJobOffer)
+                deactivate ChangeJobOfferPhaseController
+                    activate RecruitmentProcessPhaseHandler
+                    RecruitmentProcessPhaseHandler -> RecruitmentProcessPhaseHandler : checkIfOperationsHaveBeenMade()
+                    alt If not
+                        RecruitmentProcessPhaseHandler -> RecruitmentProcessRepositoryHandler : updateCurrentPhase(recruitmentProcess, previousPhase)
+                        deactivate RecruitmentProcessPhaseHandler
+                            activate RecruitmentProcessRepositoryHandler
+                            RecruitmentProcessRepositoryHandler -> RecruitmentProcessRepository : save()
+                            RecruitmentProcessRepositoryHandler --> RecruitmentProcessPhaseHandler : operationSuccess
+                            deactivate RecruitmentProcessRepositoryHandler
+                        activate RecruitmentProcessPhaseHandler
+                    end alt
+                        RecruitmentProcessPhaseHandler --> ChangeJobOfferPhaseController : operationSuccess
+                        deactivate RecruitmentProcessPhaseHandler
+                    activate ChangeJobOfferPhaseController
+                    ChangeJobOfferPhaseController --> ChangeJobOfferPhaseUI : operationSuccess
+                    deactivate ChangeJobOfferPhaseController
+                activate ChangeJobOfferPhaseUI
+        end alt
+
+        ChangeJobOfferPhaseUI --> CustomerManager
+        deactivate ChangeJobOfferPhaseUI
+    deactivate CustomerManagerUI
+deactivate CustomerManager
+
+
+
+@enduml

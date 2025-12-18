@@ -1,0 +1,96 @@
+@startuml
+
+class OperatorUI {
+    +changeJobOfferPhase()
+
+}
+
+class UploadRequirementsFileUI {
+
+}
+
+class UploadRequirementsFileController {
+    + getJobOffers()
+    + getJobApplications()
+    + checkIfApplicationHasRequirementsFile()
+    + deleteCurrentRequirementFile()
+    + validateResponses()
+    + saveResponses()
+}
+
+class PersistenceContext {
+    +repositories()
+}
+
+class RepositoryFactory {
+    +newTransactionalContext();
+    + users(TransactionalContext autoTx);
+    + users();
+    + jobOffers(TransactionalContext autoTx);
+    + jobOffers();
+    + applications(TransactionalContext autoTx);
+    + applications();
+
+}
+
+class AuthorizationService {
+    + loggedinUserWithPermissions()
+}
+
+class ListJobOfferService {
+    + getJobRequirementsOfJobOffer()
+}
+
+class ListJobApplicationService {
+    + findApplicationByRef()
+    + getJobApplicationsOfJobOfferCode()
+}
+
+class PluginHandler {
+    + activateCheckerFunction()
+}
+
+class JobAplicationManagementService {
+    + removeFile()
+    + saveResponses()
+}
+
+class JobOfferRepository {
+
+}
+
+class UserRepository {
+
+}
+
+class JobAplicationRepository {
+
+}
+
+OperatorUI ..> UploadRequirementsFileUI
+
+UploadRequirementsFileUI ..> UploadRequirementsFileController
+
+
+UploadRequirementsFileController ..> PersistenceContext : repositories ()
+UploadRequirementsFileController --> AuthorizationService
+UploadRequirementsFileController --> ListJobOfferService
+UploadRequirementsFileController --> ListJobApplicationService
+UploadRequirementsFileController -right-> PluginHandler
+UploadRequirementsFileController --> JobAplicationManagementService
+
+JobAplicationManagementService ..> JobAplicationRepository : save()
+
+ListJobOfferService .> JobOfferRepository
+
+ListJobApplicationService ...> JobAplicationRepository
+
+AuthorizationService ..> UserRepository
+
+PersistenceContext --> RepositoryFactory : create()
+
+RepositoryFactory ---> JobOfferRepository : create()
+RepositoryFactory ---> UserRepository : create()
+RepositoryFactory ---> JobAplicationRepository : create()
+
+@enduml

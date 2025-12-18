@@ -1,0 +1,41 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title UG007 - Register User Authorization (SSD)
+
+
+participant "AddUserController" as AddUserController
+participant "AuthorizationService" as AuthorizationService
+participant "UserManagementService" as UserManagementService
+
+
+-> AddUserController : ...
+activate AddUserController
+AddUserController -> AuthorizationService : ensureAuthenticatedUserHasAnyOf(BaseRoles.ADMIN, BaseRoles.OPERATOR, \nBaseRoles.CUSTOMER_MANAGER, BaseRoles.LANGUAGE_ENGINEER,\n BaseRoles.CANDIDATE, BaseRoles.CUSTOMER)
+deactivate AddUserController
+
+activate AuthorizationService
+
+note right : The class is responsible for verifying if the user has a valid role, \nif they do not it throws an UnauthenticatedException()
+
+AddUserController <-- AuthorizationService
+deactivate AuthorizationService
+activate AddUserController
+
+
+AddUserController -> UserManagementService : registerNewUser(email, password, firstName, lastName, email, roles, createdOn)
+deactivate AddUserController
+activate UserManagementService
+
+note right : The class will perform more authorization\n actions according to the configurations\n set in the BackOffice class on boot.
+AddUserController <-- UserManagementService : SystemUser
+deactivate UserManagementService
+activate AddUserController
+
+<-- AddUserController : SystemUser
+deactivate AddUserController
+
+
+@enduml

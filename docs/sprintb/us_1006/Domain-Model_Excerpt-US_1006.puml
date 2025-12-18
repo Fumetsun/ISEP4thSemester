@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/class--diagram
+
+package UserAggregate{
+
+Entity Operator {
+    <<entity>>
+}
+    class EmailAddress <<(V,#f09000) Identifier value Object>> {}
+    Entity User {
+        <<root entity>>
+    }
+
+    Class Password <<(V,#f04800) value Object>> {}
+    Class Role  <<(V,#f04800) value Object>>{}
+    Class Name <<(V,#f04800) value Object>> {}
+}
+
+Package CandidateAggregate{
+    Entity Candidate {
+        <<root entity>>
+    }
+
+    Class CandidatePhoneNumber <<(V,#f09000) Identity value Object>> {}
+}
+
+CandidatePhoneNumber .- Candidate : > identifies
+Operator "1" -- "*" Candidate : > registers
+
+User "1" ---- "1" EmailAddress : identifies <
+User "1" ---- "1" Role : classifies <
+User "1" ---- "1" Name : describes <
+User "1" ---- "1" Password : describes <
+Operator ----|> User
+Candidate --|> User
+
+
+@enduml

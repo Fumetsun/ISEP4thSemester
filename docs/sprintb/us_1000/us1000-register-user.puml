@@ -1,0 +1,84 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant AdminUI
+participant RegisterUserUI
+participant RegisterUserController
+participant PersistenceContext
+participant RepositoryFactory
+participant ListRolesServices
+participant PasswordGeneratorService
+participant UserManagementService
+participant UserRepository
+
+
+activate AdminUI
+AdminUI -> RegisterUserUI : registerUser()
+activate RegisterUserUI
+RegisterUserUI -> RegisterUserController : create()
+activate RegisterUserController
+RegisterUserController -> PersistenceContext : repositories()
+deactivate RegisterUserController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> UserRepository : create()
+deactivate RepositoryFactory
+RegisterUserUI -> RegisterUserController : getRoles()
+deactivate RegisterUserUI
+activate RegisterUserController
+RegisterUserController -> ListRolesServices : getRoles()
+deactivate RegisterUserController
+activate ListRolesServices
+ListRolesServices --> RegisterUserController : roles
+deactivate ListRolesServices
+activate RegisterUserController
+RegisterUserController --> RegisterUserUI
+deactivate RegisterUserController
+activate RegisterUserUI
+RegisterUserUI -> RegisterUserUI : doShow()
+
+alt if automatic generation chosen for password
+
+
+RegisterUserUI -> RegisterUserController : registerUser(email, role, name, address)
+deactivate RegisterUserUI
+activate RegisterUserController
+RegisterUserController -> PasswordGeneratorService : getPassword()
+deactivate RegisterUserController
+activate PasswordGeneratorService
+PasswordGeneratorService --> RegisterUserController : password
+deactivate PasswordGeneratorService
+activate RegisterUserController
+RegisterUserController -> UserManagementService : addUser(email, password, name, emailAddress, address, role)
+deactivate RegisterUserController
+activate UserManagementService
+UserManagementService --> RegisterUserController : user
+deactivate UserManagementService
+activate RegisterUserController
+RegisterUserController --> RegisterUserUI : user
+deactivate RegisterUserController
+activate RegisterUserUI
+RegisterUserUI  -> RegisterUserUI : doShow()
+
+else if manual generation is chosen for password
+RegisterUserUI -> RegisterUserController : registerUser(email,role,name,address,password)
+deactivate RegisterUserUI
+activate RegisterUserController
+RegisterUserController -> UserManagementService : addUser(email, password, name, emailAddress, address, role)
+deactivate RegisterUserController
+activate UserManagementService
+UserManagementService --> RegisterUserController : user
+deactivate UserManagementService
+activate RegisterUserController
+RegisterUserController --> RegisterUserUI
+deactivate RegisterUserController
+activate RegisterUserUI
+RegisterUserUI -> RegisterUserUI : doShow()
+end alt
+RegisterUserUI --> AdminUI
+deactivate RegisterUserUI
+@enduml

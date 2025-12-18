@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+Entity CustomerManager {
+    <<entity>>
+}
+
+Package CustomerEntityAggregate{
+    Entity CustomerEntity {
+        <<root entity>>
+    }
+
+    Class CompanyName <<(V,#f04800) value Object>> {}
+
+    Class CompanyCode <<(V,#f09000) Identifier value Object>> {}
+
+}
+Class Address  <<(V,#f04800) value Object>>{}
+
+
+CustomerEntity "1" -- "1" CompanyName : "describes" <
+CustomerEntity "1" -- "1" CompanyCode : "describes" <
+CustomerEntity "1" -- "1" Address : "describes" <
+CustomerManager "1" ----> "*" CustomerEntity : > manages
+
+@enduml

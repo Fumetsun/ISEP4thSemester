@@ -1,0 +1,53 @@
+package org.core.model.question;
+
+import org.core.SymbolTable;
+
+import java.util.Map;
+
+public class ShortTextQuestion implements Question{
+
+    private String questionPrompt;
+
+    private String questionAnswer;
+
+
+
+    public ShortTextQuestion(){
+        this.questionAnswer = "";
+        this.questionPrompt = "";
+    }
+
+    public ShortTextQuestion(String questionPrompt, String questionAnswer){
+        this.questionAnswer=questionAnswer;
+        this.questionPrompt=questionPrompt;
+    }
+
+
+
+    public int getAnswerRating(){
+        Map<String,Integer> answer = SymbolTable.getInstance().getSymbol(this.getQuestionPrompt());
+
+        int score=0;
+
+
+        for(String a : answer.keySet()){
+
+            if(getQuestionAnswer().toUpperCase().contains(a.toUpperCase())){
+                score += answer.get(a);
+            }
+
+        }
+
+        return score;
+    }
+
+    @Override
+    public String getQuestionAnswer() {
+        return questionAnswer;
+    }
+
+    @Override
+    public String getQuestionPrompt() {
+        return questionPrompt;
+    }
+}

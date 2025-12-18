@@ -1,0 +1,42 @@
+@startuml
+
+class ServerCustomerOffersHandler {
+        - final AuthorizationService authz;
+        - static final int ASS_PORT_NUMBER;
+        - static InetAddress serverIP;
+        - static Socket sock;
+        - String serverIp;
+        - String password;
+        + ServerCustomerOffersHandler(String password)
+        + Iterable<MessageDTO> getMyOffers()
+        + void sendEmail(MessageDTO message, ObjectOutputStream sOut)
+        + static void sendVersionAndCode(ObjectOutputStream sOut, int code)
+        + static void sendCredentials(ObjectOutputStream sOut, String username, String password)
+        + static void closeSocket()
+    }
+
+class ListCustomerOffersUI {
+        - ListCustomerOffersController ctrl
+        + void displayReceivedOffers(Iterable<MessageDTO> messages)
+        + boolean doShow()
+        + String headline()
+}
+
+
+class ListCustomerOffersController {
+    +Iterable<MessageDTO> displayOffers(String password)
+}
+
+class MessageDTO {
+        - static long serialVersionUID
+        - String data
+        + MessageDTO(String data)
+        + String getData()
+        + String toString()
+        + byte[] getBytes()
+    }
+
+    ListCustomerOffersUI -> ListCustomerOffersController
+    ListCustomerOffersController .-> ServerCustomerOffersHandler
+    ServerCustomerOffersHandler .-> MessageDTO
+@enduml

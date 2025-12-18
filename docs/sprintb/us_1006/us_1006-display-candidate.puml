@@ -1,0 +1,49 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant CustomerManagerUI
+participant DisplayCandidateUI
+participant DisplayCandidateController
+participant PersistenceContext
+participant RepositoryFactory
+participant GetCandidateService
+participant CandidateRepository
+
+activate CustomerManagerUI
+CustomerManagerUI -> DisplayCandidateUI : registerJobOffer()
+activate DisplayCandidateUI
+DisplayCandidateUI -> DisplayCandidateController : create()
+activate DisplayCandidateController
+DisplayCandidateController -> PersistenceContext : repositories()
+deactivate DisplayCandidateController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> CandidateRepository : create()
+deactivate RepositoryFactory
+DisplayCandidateUI -> DisplayCandidateController : displayCandidates()
+deactivate DisplayCandidateUI
+activate DisplayCandidateController
+DisplayCandidateController -> GetCandidateService : getCandidates()
+deactivate DisplayCandidateController
+activate GetCandidateService
+GetCandidateService -> CandidateRepository : findAllCandidates()
+deactivate GetCandidateService
+activate CandidateRepository
+CandidateRepository --> GetCandidateService : candidates
+deactivate CandidateRepository
+activate GetCandidateService
+GetCandidateService --> DisplayCandidateController : candidates
+deactivate GetCandidateService
+activate DisplayCandidateController
+DisplayCandidateController --> DisplayCandidateUI : candidates
+deactivate DisplayCandidateController
+activate DisplayCandidateUI
+DisplayCandidateUI -> DisplayCandidateUI : showCandidateList(candidates)
+DisplayCandidateUI -> DisplayCandidateUI : displayInformation(candidate)
+DisplayCandidateUI --> CustomerManagerUI
+deactivate DisplayCandidateUI
+@enduml

@@ -1,0 +1,14 @@
+-LifeGuard Requirements Model-
+
+1- What time can you come in during the civil work week, Monday through Friday? (HH:mm) <TIMEANS>
+R: 07:00
+
+2- On a scale of 1 to 10, how good are you at swimming, in a range of 3? (Example: 7-9) <NUMANS>
+R: 7-9
+
+3- What is your date of birth? (dd/MM/yyyy) <DATEANS>
+R: 11/03/2004
+
+4- What percentage of your work-out time do you spend swimming? (0-1, 76% = 0.76) <DECANS>
+R: 0.3
+

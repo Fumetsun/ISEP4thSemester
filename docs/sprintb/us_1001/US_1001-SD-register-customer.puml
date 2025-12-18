@@ -1,0 +1,88 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant CustomerManagerUI
+participant RegisterCustomerUI
+participant RegisterCustomerController
+participant PersistenceContext
+participant RepositoryFactory
+participant PasswordGeneratorService
+participant UserRepository
+participant AuthorizationService
+participant CustomerUserCreatedEvent
+participant CustomerUserCreatedEventWatchDog
+participant RegisterCustomerWatchdogController
+participant CustomerFactory
+participant CustomerRepository
+
+activate CustomerManagerUI
+CustomerManagerUI -> RegisterCustomerUI : registerCustomer()
+activate RegisterCustomerUI
+RegisterCustomerUI -> RegisterCustomerController : create()
+activate RegisterCustomerController
+RegisterCustomerController -> PersistenceContext : repositories()
+deactivate RegisterCustomerController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> UserRepository : create()
+RepositoryFactory -> CustomerRepository : create()
+deactivate RepositoryFactory
+
+RegisterCustomerUI -> RegisterCustomerController : registerUser(name, customerCode, customerAddress, email)
+deactivate RegisterCustomerUI
+activate RegisterCustomerController
+
+group "To Register a User (Automatic Version)" SD
+RegisterCustomerController -> PasswordGeneratorService : generatePassword()
+deactivate RegisterCustomerController
+activate PasswordGeneratorService
+PasswordGeneratorService --> RegisterCustomerController : password
+deactivate PasswordGeneratorService
+activate RegisterCustomerController
+RegisterCustomerController -> UserRepository : addUser(email, password, name, BaseRoles.CUSTOMER)
+deactivate RegisterCustomerController
+activate UserRepository
+UserRepository --> RegisterCustomerController : createdUser
+deactivate UserRepository
+activate RegisterCustomerController
+end group
+
+RegisterCustomerController -> AuthorizationService : loggedinUserWithPermissions(BaseRoles.CUSTOMERMANAGER)
+deactivate RegisterCustomerController
+activate AuthorizationService
+AuthorizationService -> RegisterCustomerController : loggedUser
+deactivate AuthorizationService
+activate RegisterCustomerController
+
+RegisterCustomerController -> CustomerUserCreatedEvent :createCustomerUserCreatedEvent(name, companyCode, companyAddress, loggedUser, createdUser)
+RegisterCustomerController --> RegisterCustomerUI : createdUser
+deactivate RegisterCustomerController
+activate RegisterCustomerUI
+deactivate RegisterCustomerController
+
+RegisterCustomerUI --> CustomerManagerUI
+deactivate RegisterCustomerUI
+deactivate CustomerManagerUI
+
+activate CustomerUserCreatedEventWatchDog
+CustomerUserCreatedEventWatchDog -> RegisterCustomerWatchdogController : registerCustomer(event)
+deactivate CustomerUserCreatedEventWatchDog
+
+activate RegisterCustomerWatchdogController
+RegisterCustomerWatchdogController -> CustomerFactory : createCustomer(name, customerCode, customerAddress, loggedUser, createdUser)
+deactivate RegisterCustomerWatchdogController
+activate CustomerFactory
+CustomerFactory --> RegisterCustomerWatchdogController : customer
+deactivate CustomerFactory
+activate RegisterCustomerWatchdogController
+RegisterCustomerWatchdogController -> CustomerRepository : save(customer)
+deactivate RegisterCustomerWatchdogController
+activate CustomerRepository
+deactivate CustomerRepository
+
+
+@enduml

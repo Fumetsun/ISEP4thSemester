@@ -1,0 +1,82 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant CustomerManagerUI
+participant UpdateJobRequirementUI
+participant UpdateJobRequirementController
+participant ManagePluginService
+participant RegisteredPluginRepository
+participant RegisterJobOfferService
+participant JobOfferRepository
+
+
+activate CustomerManagerUI
+CustomerManagerUI -> UpdateJobRequirementUI
+deactivate CustomerManagerUI
+activate UpdateJobRequirementUI
+UpdateJobRequirementUI -> UpdateJobRequirementUI : doShow()
+UpdateJobRequirementUI -> UpdateJobRequirementController : getPlugins()
+deactivate UpdateJobRequirementUI
+activate UpdateJobRequirementController
+UpdateJobRequirementController -> ManagePluginService : allJobRequirements()
+deactivate UpdateJobRequirementController
+activate ManagePluginService
+ManagePluginService -> RegisteredPluginRepository : findAllJobRequirement()
+deactivate ManagePluginService
+activate RegisteredPluginRepository
+note right : The repository class performs a query on\n the database to get the filtered list of plugins
+RegisteredPluginRepository --> ManagePluginService : plugins
+deactivate RegisteredPluginRepository
+activate ManagePluginService
+ManagePluginService --> UpdateJobRequirementController : plugins
+deactivate ManagePluginService
+activate UpdateJobRequirementController
+UpdateJobRequirementController --> UpdateJobRequirementUI : plugins
+deactivate UpdateJobRequirementController
+activate UpdateJobRequirementUI
+UpdateJobRequirementUI -> UpdateJobRequirementUI : show
+UpdateJobRequirementUI -> UpdateJobRequirementController : getOffers()
+deactivate UpdateJobRequirementUI
+activate UpdateJobRequirementController
+UpdateJobRequirementController -> RegisterJobOfferService : getOffers()
+deactivate UpdateJobRequirementController
+activate RegisterJobOfferService
+RegisterJobOfferService -> JobOfferRepository : findAllOffers()
+deactivate RegisterJobOfferService
+activate JobOfferRepository
+JobOfferRepository --> RegisterJobOfferService : jobOffers()
+deactivate  JobOfferRepository
+activate RegisterJobOfferService
+RegisterJobOfferService --> UpdateJobRequirementController : jobOffers
+deactivate RegisterJobOfferService
+activate UpdateJobRequirementController
+UpdateJobRequirementController --> UpdateJobRequirementUI : jobOffers
+deactivate UpdateJobRequirementController
+activate UpdateJobRequirementUI
+UpdateJobRequirementUI -> UpdateJobRequirementUI : show
+UpdateJobRequirementUI -> UpdateJobRequirementController : updateJobOffer(jobOffer, plugin)
+deactivate UpdateJobRequirementUI
+activate UpdateJobRequirementController
+UpdateJobRequirementController -> RegisterJobOfferService : updateJobOffer(jobOffer, plugin)
+deactivate
+activate RegisterJobOfferService
+RegisterJobOfferService -> JobOfferRepository : updateJobOffer(jobOffer, plugin)
+deactivate
+activate JobOfferRepository
+JobOfferRepository --> RegisterJobOfferService : jobOffer
+note right : repository as information expert updates the entry in db
+deactivate JobOfferRepository
+activate RegisterJobOfferService
+RegisterJobOfferService --> UpdateJobRequirementController : jobOffer
+deactivate RegisterJobOfferService
+activate UpdateJobRequirementController
+UpdateJobRequirementController --> UpdateJobRequirementUI : jobOffer
+deactivate UpdateJobRequirementController
+activate UpdateJobRequirementUI
+UpdateJobRequirementUI -> UpdateJobRequirementUI : show
+UpdateJobRequirementUI --> CustomerManagerUI
+deactivate UpdateJobRequirementUI
+activate CustomerManagerUI
+@enduml

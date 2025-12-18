@@ -1,0 +1,248 @@
+@startuml
+'https://plantuml.com/class--diagram
+
+Package UserAggregate{
+    Entity LanguageEngineer {
+            <<entity>>
+    }
+
+    Entity Admin {
+        <<entity>>
+    }
+
+    Entity CustomerManager {
+        <<entity>>
+    }
+
+    Entity Operator {
+        <<entity>>
+    }
+
+    Entity Customer {
+        <<entity>>
+    }
+
+    Entity User {
+        <<root entity>>
+    }
+
+    Class EmailAddress <<(V,#f09000) Identifier value Object>>{}
+    Class Password <<(V,#f04800) value Object>>{}
+    Class Role  <<(V,#f04800) value Object>>{}
+    Class Name <<(V,#f04800) value Object>>{}
+}
+
+Package CandidateAggregate{
+    Entity Candidate {
+        <<root entity>>
+    }
+
+    Class CandidatePhoneNumber <<(V,#f09000) Identity value Object>>{}
+}
+
+
+Package RequirementsSpecification{
+
+    Entity RequirementSpecification  {
+        <<root entity>>
+    }
+
+    Class RequirementSpecificationDescription <<(V,#f04800) value Object>>{}
+    Class RequirementSpecificationAnswer <<(V,#f04800) value Object>>{}
+    Class RequirementSpecificationRefCode <<(V,#f09000) Identifier value Object>>{}
+}
+
+Package JobOfferAggregate{
+    Entity JobOffer {
+        <<root entity>>
+    }
+
+    Class JobRefCode <<(V, #f09000) Identifier value Object>>{}
+    Class JobTitle <<(V,#f04800) value Object>>{}
+    Class ContractType  <<(V,#f04800) value Object>>{}
+    Class JobMode <<(V,#f04800) value Object>>{}
+    Class NumberOfVacancies <<(V,#f04800) value Object>>{}
+}
+
+Package CustomerEntityAggregate{
+
+    Entity CustomerEntity {
+        <<root entity>>
+    }
+
+    Class CompanyName <<(V,#f04800) value Object>>{}
+    Class CompanyCode <<(V,#f09000) Identifier value Object>>{}
+}
+
+Package RecruitmentProcessAggregate{
+
+    Entity RecruitmentProcess {
+            <<root entity>>
+    }
+
+    Class CurrentPhase <<(V,#f04800) value Object>> {}
+    Class AllPhases <<(V,#f04800) value Object>> {}
+
+
+    Class RecruitmentPhase <<(V,#f04800) value Object>> {}
+    Class RecruitmentProcessRefCode <<(V,#f09000) Identifier value Object>>{}
+    Class RecruitmentPhaseName <<(V,#f04800) value Object>>{}
+    Class RecruitmentPhaseDescription <<(V,#f04800) value Object>>{}
+    Class RecruitmentPhaseTimeFrame <<(V,#f04800) value Object>>{}
+}
+
+Package NotificationAggregate{
+    Entity Notification  {
+            <<root entity>>
+        }
+    Class NotificationType <<(V,#f04800) value Object>>{}
+    Class CreationDate <<(V,#f04800) value Object>>{}
+
+}
+
+Package InterviewAggregate{
+
+    Entity InterviewModel  {
+        <<root entity>>
+    }
+
+    Class InterviewModelRefCode <<(V,#f09000) Identifier value Object>>{}
+    Class InterviewTimeFrame <<(V,#f04800) value Object>>{}
+    Class InterviewSpecifications <<(V,#f04800) value Object>>{}
+    Class InterviewQuestion <<(V,#f04800) value Object>>{}
+    Class InterviewAnswer <<(V,#f04800) value Object>>{}
+    Class AnswerRatings <<(V,#f04800) value Object>>{}
+}
+
+Package PluginAggregate{
+
+    Entity RegisteredPlugin  {
+        <<root entity>>
+    }
+
+    Class PluginFileName <<(V,#f09000) Identifier value Object>>{}
+    Class PluginName <<(V,#f04800) value Object>>{}
+    Enum PluginType << enum Object>>{}
+}
+
+Package ApplicationAggregate{
+
+    Entity Application  {
+        <<root entity>>
+    }
+
+    Class ApplicationAttachedFile <<(V,#f04800) value Object>>{}
+    Class ApplicationRefCode <<(V,#f09000) Identifier value Object>>{}
+    Class ApplicationAttachedFilesLocation <<(V,#f04800) value Object>>{}
+    Class InterviewGrade <<(V,#f04800) value Object>>{}
+    Class ApplicationState <<(V,#f04800) value Object>>{}
+    Class ApplicationEmail <<(V,#f04800) value Object>>{}
+}
+
+Package RankingAggregate{
+    Entity Ranking  {
+            <<root entity>>
+        }
+    Class Rank <<(V,#f04800) value Object>>{}
+
+}
+
+Ranking - Rank : <describes
+
+Ranking --> JobOffer
+Ranking -> Application
+
+
+
+Class InterviewAssessment <<(V,#0000FF) value Service>> {}
+Class RequirementsAssessment <<(V,#0000FF) value Service>> {}
+Class Address  <<(V,#f04800) value Object>>{}
+
+
+Notification -- CreationDate : < describes
+Notification - NotificationType : < describes
+Notification - User
+
+
+User "1" ---- "1" EmailAddress : identifies <
+User "1" ---- "1" Role : classifies <
+User "1" ---- "1" Name : describes <
+User "1" ---- "1" Password : describes <
+User "1" -down---- "*" JobOffer : > registers
+
+Admin  ----|> User
+
+LanguageEngineer --|> User
+LanguageEngineer - RegisteredPlugin : manages <
+
+Customer --|> User
+Customer <---- JobOffer : < requests creation
+
+Operator ----|> User
+Operator "*" - "1" Application : > manages
+Operator "1" -- "*" Candidate : > registers
+
+CustomerManager ---|> User
+CustomerManager "1" --> "*" CustomerEntity : > manages
+
+Candidate --|> User
+Candidate "1" ----- "*" Application : > makes
+Candidate .up- CandidatePhoneNumber : > identifies
+
+CustomerEntity "1" -- "1" CompanyName : "describes" <
+CustomerEntity "1" -- "1" CompanyCode : describes <
+CustomerEntity "1" -- "1" Address : "describes" <
+
+JobOffer "1" ---- "1" JobRefCode : identifies <
+JobOffer "1" ---- "1" JobTitle : describes <
+JobOffer "1" ---- "1" ContractType : describes <
+JobOffer "1" ---- "1" JobMode : describes <
+JobOffer "1" ---- "1" NumberOfVacancies : describes <
+JobOffer "1" ---- "1" JobsDescription : "describes" <
+JobOffer - Address : < describes
+JobOffer "1" ---- "1" RequirementSpecification : <
+JobOffer "1" ---- "1" InterviewModel : <
+JobOffer "1" --> "1" RecruitmentProcess : "executes"
+JobOffer "1" <- "1" CustomerEntity : > "posts"
+
+JobOffer .-> InterviewAssessment
+InterviewAssessment .-> Application
+
+JobOffer .-> RequirementsAssessment
+RequirementsAssessment .-> Application
+
+Application "*" --> "1" JobOffer : > pertains to
+Application "1" - "1" ApplicationEmail : > contains
+Application "1" -- "1" ApplicationRefCode : describes <
+Application "1" -- "*" ApplicationAttachedFile : > contains
+Application "1" -- "1" ApplicationAttachedFilesLocation : > contains
+Application "1" -- "1" ApplicationState : > contains
+Application "1" -- "1" InterviewGrade : > contains
+
+RegisteredPlugin -- PluginFileName : locates <
+RegisteredPlugin -- PluginName : identifies <
+RegisteredPlugin -- PluginType : classifies <
+
+InterviewModel "1" -- "1" InterviewSpecifications : > contains
+InterviewModel "1" -- "1" InterviewTimeFrame : > contains
+InterviewModel "1" -- "*" InterviewQuestion : < describes
+InterviewModel "1" -- "*" InterviewModelRefCode : < identifies
+InterviewModel "1" -- "1" RegisteredPlugin : "configures" <
+InterviewQuestion - InterviewAnswer : fills <
+InterviewQuestion -- AnswerRatings : grades >
+
+RequirementSpecification "1" -- "1" RequirementSpecificationDescription : "describes" <
+RequirementSpecification "1" -- "1" RequirementSpecificationRefCode : "identifies" <
+RequirementSpecificationAnswer "*" -- "1" RequirementSpecification : "describes" >
+RequirementSpecification "1" -- "1" RegisteredPlugin : "configures" <
+
+RecruitmentProcess "1" -- "*" CurrentPhase : contains >
+RecruitmentProcess "1" -- "*" AllPhases : contains >
+RecruitmentPhase "1" -up. "1" CurrentPhase : describes >
+RecruitmentPhase "1" -up. "1" AllPhases : describes >
+RecruitmentProcess "1" -- "1" RecruitmentProcessRefCode : identifies <
+RecruitmentPhase "1" - "1" RecruitmentPhaseName : describes <
+RecruitmentPhase "1" -- "1" RecruitmentPhaseDescription : describes <
+RecruitmentPhase "1" -- "1" RecruitmentPhaseTimeFrame : describes <
+
+@enduml

@@ -1,0 +1,87 @@
+@startuml
+
+class CustomerManagerUI {
+    +changeJobOfferPhase()
+
+}
+
+class ChangeJobOfferPhaseUI {
+
+}
+
+class ChangeJobOfferPhaseController {
+    +getJobOffers()
+    +incrementPhase()
+    +decreasePhase()
+}
+
+class PersistenceContext {
+    +repositories()
+}
+
+class RepositoryFactory {
+    +newTransactionalContext();
+    + users(TransactionalContext autoTx);
+    + users();
+    + jobOffers(TransactionalContext autoTx);
+    + jobOffers();
+    + processes(TransactionalContext autoTx);
+    + processes();
+
+}
+
+class AuthorizationService {
+    + loggedinUserWithPermissions()
+}
+
+class ListJobOfferService {
+    + getJobOffersOfManager()
+}
+
+class RecruitmentProcessPhaseHandler {
+    + incrementPhase()
+    + decreasePhase()
+    + updateCurrentPhase()
+}
+
+class RecruitmentProcessRepositoryHandler {
+    + getRecruitmentProcessByRef()
+}
+
+class JobOfferRepository {
+
+}
+
+class UserRepository {
+
+}
+
+class RecruitmentProcessRepository {
+
+}
+
+CustomerManagerUI ..> ChangeJobOfferPhaseUI
+
+ChangeJobOfferPhaseUI ..> ChangeJobOfferPhaseController
+
+
+ChangeJobOfferPhaseController ..> PersistenceContext : repositories ()
+ChangeJobOfferPhaseController --> AuthorizationService
+ChangeJobOfferPhaseController --> ListJobOfferService
+ChangeJobOfferPhaseController --> RecruitmentProcessPhaseHandler
+
+ListJobOfferService ..> JobOfferRepository
+
+RecruitmentProcessPhaseHandler --> RecruitmentProcessRepositoryHandler
+
+RecruitmentProcessRepositoryHandler ...> RecruitmentProcessRepository : save()
+
+AuthorizationService ..> UserRepository
+
+PersistenceContext --> RepositoryFactory : create()
+
+RepositoryFactory ---> JobOfferRepository : create()
+RepositoryFactory ---> UserRepository : create()
+RepositoryFactory ---> RecruitmentProcessRepository : create()
+
+@enduml

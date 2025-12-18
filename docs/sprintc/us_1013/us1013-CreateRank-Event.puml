@@ -1,0 +1,56 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant RankingEventWatchdog as watchdog
+participant RankingEventWatchdogController as ctrl
+participant RankingFactory as factory
+participant RankingRepository as repo
+
+
+-> watchdog : publish(event)
+activate watchdog
+watchdog -> ctrl : getHighestRank(((RankingEvent) domainEvent).getJobOffer())
+deactivate watchdog
+activate ctrl
+ctrl --> watchdog : HighestRank
+deactivate ctrl
+activate watchdog
+
+watchdog -> ctrl : createRanking(domainEvent, number)
+deactivate watchdog
+activate ctrl
+
+ctrl -> factory : createRanking(number, ((RankingEvent) domainEvent).getJobApplication(),\n ((RankingEvent) domainEvent).getJobOffer());
+deactivate ctrl
+activate factory
+
+factory --> ctrl : rank
+deactivate factory
+activate ctrl
+
+ctrl --> watchdog : ranking
+deactivate ctrl
+activate watchdog
+
+watchdog -> ctrl : save(rank)
+deactivate watchdog
+activate ctrl
+
+ctrl -> repo : save(rank)
+deactivate ctrl
+activate repo
+
+repo --> ctrl : rank
+deactivate repo
+activate ctrl
+
+ctrl -> watchdog : rank
+deactivate ctrl
+activate watchdog
+
+<-- watchdog : displays operation success
+deactivate watchdog
+
+@enduml

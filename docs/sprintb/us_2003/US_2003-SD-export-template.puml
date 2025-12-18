@@ -1,0 +1,74 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant OperatorUI
+participant ExportJobRequirementsTemplateUI
+participant ExportJobRequirementsTemplateController
+participant PersistenceContext
+participant RepositoryFactory
+participant PluginHandler
+participant RegisterdPluginFactory
+participant ManagePluginService
+participant RegisteredPluginsRepository
+
+activate OperatorUI
+OperatorUI -> ExportJobRequirementsTemplateUI : exportTemplate()
+activate ExportJobRequirementsTemplateUI
+ExportJobRequirementsTemplateUI -> ExportJobRequirementsTemplateController : create()
+activate ExportJobRequirementsTemplateController
+ExportJobRequirementsTemplateController -> PersistenceContext : repositories()
+deactivate ExportJobRequirementsTemplateController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> RegisteredPluginsRepository : create()
+deactivate RepositoryFactory
+
+ExportJobRequirementsTemplateUI -> ExportJobRequirementsTemplateController : getAllJobRequirementPlugins()
+deactivate ExportJobRequirementsTemplateUI
+activate ExportJobRequirementsTemplateController
+ExportJobRequirementsTemplateController -> ManagePluginService : allJobRequirements()
+deactivate ExportJobRequirementsTemplateController
+activate ManagePluginService
+ManagePluginService -> RegisteredPluginsRepository : findAll()
+deactivate ManagePluginService
+activate RegisteredPluginsRepository
+RegisteredPluginsRepository --> ManagePluginService : plugins
+deactivate RegisteredPluginsRepository
+activate ManagePluginService
+ManagePluginService --> ExportJobRequirementsTemplateController : pluginsDTO
+deactivate ManagePluginService
+activate ExportJobRequirementsTemplateController
+ExportJobRequirementsTemplateController --> ExportJobRequirementsTemplateUI : pluginsDTO
+deactivate ExportJobRequirementsTemplateController
+activate ExportJobRequirementsTemplateUI
+ExportJobRequirementsTemplateUI -> ExportJobRequirementsTemplateUI : show()
+
+ExportJobRequirementsTemplateUI -> ExportJobRequirementsTemplateController : generateTemplate(fileName, filePath, outputPath)
+deactivate ExportJobRequirementsTemplateUI
+activate ExportJobRequirementsTemplateController
+ExportJobRequirementsTemplateController -> PluginHandler : activateTemplateFunction(filePath, outputFolder)
+deactivate ExportJobRequirementsTemplateController
+activate PluginHandler
+note right
+Accesses the plugin functionality
+[can't be repressented]
+end note
+PluginHandler --> ExportJobRequirementsTemplateController
+deactivate PluginHandler
+activate ExportJobRequirementsTemplateController
+ExportJobRequirementsTemplateController --> ExportJobRequirementsTemplateUI
+deactivate ExportJobRequirementsTemplateController
+
+activate ExportJobRequirementsTemplateUI
+ExportJobRequirementsTemplateUI --> OperatorUI
+deactivate ExportJobRequirementsTemplateUI
+deactivate OperatorUI
+
+
+
+
+@enduml

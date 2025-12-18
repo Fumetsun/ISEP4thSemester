@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence">
+    <persistence-unit name="jobs4u.base">
+        <!--
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        -->
+        <!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+
+        <class>eapli.framework.infrastructure.authz.domain.model.SystemUser</class>
+        <class>eapli.framework.infrastructure.authz.domain.model.Role</class>
+        <class>eapli.framework.infrastructure.authz.domain.model.RoleSet</class>
+        <class>eapli.framework.infrastructure.authz.domain.model.RoleAssignment</class>
+        <class>jobs4u.base.clientusermanagement.domain.ClientUser</class>
+        <class>jobs4u.base.clientusermanagement.domain.SignupRequest</class>
+        <class>jobs4u.base.joboffermanagement.domain.JobOffer</class>
+        <class>jobs4u.base.customermanagement.domain.Customer</class>
+        <class>jobs4u.base.pluginhandler.domain.RegisteredPlugin</class>
+        <class>jobs4u.base.recruitmentprocessmanagement.domain.RecruitmentProcess</class>
+        <class>jobs4u.base.recruitmentprocessmanagement.domain.RecruitmentPhase</class>
+        <class>jobs4u.base.candidatemanagement.domain.Candidate</class>
+        <class>jobs4u.base.applicationmanagement.domain.JobApplication</class>
+        <class>jobs4u.base.notificationmanagement.domain.Notification</class>
+        <class>jobs4u.base.rankingmanagement.domain.Ranking</class>
+
+        <properties>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://vs722.dei.isep.ipp.pt:2225/jobs4u"/>             <!--FOR SERVER-->
+            <!--property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://vsgate-s2.dei.isep.ipp.pt:10722/jobs4u"/-->   <!--FOR CLIENTS-->
+            <!--property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/jobs4u"/-->
+            <!--<property name="jakarta.persistence.jdbc.url" value="jdbc:h2:~\jobs4u"/>-->
+
+            <property name="jakarta.persistence.jdbc.user" value="sa"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+
+            <!--<property name="hibernate.archive.autodetection" value="class"/>-->
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <!--<property name="hibernate.format_sql" value="true"/>-->
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            <!-- <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/> -->
+            <!-- <property name="eclipselink.logging.level" value="FINE"/> -->
+            <!-- <property name = "hibernate.show_sql" value = "true" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>-->
+
+        </properties>
+    </persistence-unit>
+</persistence>

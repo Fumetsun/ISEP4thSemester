@@ -1,0 +1,104 @@
+@startuml US1005_sd
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant CustomerManagerUI as CM
+participant ListApplicationsUI as UI
+participant ListApplicationsController as CTRL
+participant PersistenceContext as PERS
+participant RepositoryFactory as REPO
+participant FilteredCustomerListingService as FCLS
+participant ListJobOfferService as JOSER
+participant ListJobApplicationService as JASER
+participant JobOfferRepository as JOREPO
+participant JobApplicationRepository as JAREPO
+participant CustomerRepository as CREPO
+
+activate CM
+
+	CM -> UI : getApplications()
+
+	activate UI
+
+		UI -> CTRL : create()
+
+		activate CTRL
+		 
+			CTRL -> PERS : repositories()
+
+			activate PERS
+				PERS -> REPO : create()
+			deactivate PERS
+
+			activate REPO
+				REPO -> JOREPO : create()
+				REPO -> JAREPO : create()
+				REPO -> CREPO : create()
+			deactivate REPO
+
+		deactivate CTRL
+
+		UI -> CTRL : getCustomers(manager)
+
+		activate CTRL
+
+			CTRL -> FCLS : allCustomersOfManager(manager)
+
+			activate FCLS
+				FCLS --> CTRL : customers
+			deactivate FCLS
+
+			CTRL -> UI : customers
+
+		deactivate CTRL
+
+		UI --> CM : choose customer
+
+	deactivate UI
+
+	CM -> UI : chooses
+
+	activate UI
+
+		UI -> CTRL : getJobOpenings(username)
+
+		activate CTRL
+
+			CTRL -> JOSER : getJobOpeningsByUser(username)
+
+			activate JOSER
+				JOSER --> CTRL : jobOpenings
+			deactivate JOSER
+
+			CTRL --> UI : jobOpenings
+
+		deactivate CTRL
+
+		UI -> CM : select job
+	
+	deactivate UI
+
+	CM -> UI : job opening
+
+	activate UI
+
+		UI -> CTRL : getApplications(jobRefCode)
+
+		activate CTRL
+
+			CTRL -> JASER : getApplications(jobRefCode)
+
+			activate JASER
+				JASER --> CTRL : applications
+			deactivate JASER
+
+			CTRL --> UI : applications
+
+		deactivate CTRL
+
+		UI --> CM : applications
+
+	deactivate UI
+
+deactivate CM

@@ -1,0 +1,26 @@
+- Lead Programmer Job Requirements -
+
+# Answer if the following phrase is true or false. (True | False)
+You have already worked in this postion.
+Answer: False
+
+# Enter your type of academic-degree. (None | Bachelors | Master | PhD)
+Academic-Degree: NONE
+
+# Select the option that answers the folowing question.
+How many team projects and teams have you lead?
+A - Never lead any project/team.
+B - 1 to 3.
+C - 3 to 5.
+D - 5+.
+Answer: A
+
+# Select one or more  programming languages you are proficient in (example: A, B).
+A - Java
+B - Javascript
+C - Python
+D - C#
+Answer: A, B,c,d
+
+# Enter your number of years of experience. (integer)
+Answer: 10

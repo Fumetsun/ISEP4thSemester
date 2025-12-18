@@ -1,0 +1,15 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+title US3002 - List Customer Job Offers - SSD
+
+actor Customer
+participant System
+
+activate Customer
+Customer -> System: Requests to see their job offers
+activate System
+System --> Customer: Displays job offers to customer
+deactivate System
+@enduml

@@ -1,0 +1,42 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant EmailNotificationHandler as handler
+participant FollowUpServer as server
+participant SMTPServer as smtp
+
+
+activate handler
+handler -> server : new Socket()
+deactivate handler
+activate server
+server --> handler : accept()
+deactivate server
+activate handler
+handler -> server : send authentication \ninformation through tcp
+deactivate handler
+activate server
+server --> handler : send operation result code
+deactivate server
+activate handler
+
+alt if authentication successful
+
+handler -> server : sends email information
+deactivate handler
+activate server
+
+server -> smtp : forwards request
+server --> handler
+deactivate server
+activate handler
+
+
+end if
+
+
+
+
+@enduml

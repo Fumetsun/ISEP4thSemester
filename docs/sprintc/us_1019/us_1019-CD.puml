@@ -1,0 +1,104 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class CustomerManagerUI{
+}
+
+class ListSortedApplicantsUI{
+    - theController: ListSortedApplicantsController
+    + listCustomerJobOffer()
+    + doShow()
+}
+
+class ListSortedApplicantsController{
+    - authz: AuthorizationService
+    - offerListingService: ListJobOfferService
+    - applicationListingService: ListJobApplicationService
+    + jobOfferList(): List<JobOffer>
+    + getSortedApplicants(offer: JobOffer): List<JobApplications>
+}
+
+class ListJobApplicationService{
+    - repo: JobApplicationRepository
+    + getApplicationsByJobOffer(offer: JobOffer): Iterable<JobApplication>
+}
+
+class ListJobOfferService{
+    - repo: JobOfferRepository
+    + getJobOffersByUser(customer: Customer): Iterable<JobOffer>
+}
+
+
+class PersistenceContext{
+    + repositories()
+}
+
+class RepositoryFactory{
+    + newTransactionalContext()
+    + jobOffers(autoTx: TransactionalContext)
+    + jobApplications(autoTx: TransactionalContext)
+}
+
+class JobOfferRepository{
+    + findByRef(JobRefCode: ref): Optional<JobOffer>
+    + findAllOffers(): Iterable<JobOffer>
+    + findAllOffersOfCustomer(customer: Customer): Iterable<JobOffer>
+}
+
+class JobOffer {
+        - version: Long
+        - jobRefCode: JobRefCode
+        - title: JobTitle
+        - contract: ContractType
+        - mode: JobMode
+        - vacancies: NumberOfVacancies
+        - description: JobDescription
+        - address: Address
+        - customer: Customer
+        + equals(o: Object): boolean
+        + hashCode(): int
+        + sameAs(other: Object): boolean
+        + reference(): JobRefCode
+        + identity(): JobRefCode
+        + toDTO(): JobOfferDto
+        + toString(): String
+}
+
+class JobApplicationRepository{
+    + findByRef(Integer: ref): Optional<JobApplication>
+    + findAllApplications(): Iterable<JobApplication>
+    + findApplicationsOfJobOffer(JobOffer: offer): Iterable<JobApplication>
+}
+
+class JobApplication{
+    - refcode: Integer
+    - email:ApplicationEmail
+    - filesPath: ApplicationAttachedFilesPath
+    - attachedFile: ApplicationAttachedFile
+    - state: ApplicationState
+    - ranking: Integer
+    - joboffer: JobOffer
+    - candidate: Candidate
+    + sameAs(other: Object): boolean
+    + identity(): Integer
+    + toDTO(): ApplicationDTO
+    + sameOffer(jobOffer: JobOffer): boolean
+}
+
+CustomerManagerUI -right-> ListSortedApplicantsUI
+ListSortedApplicantsUI -down-> ListSortedApplicantsController
+
+ListSortedApplicantsController --> ListJobOfferService
+ListSortedApplicantsController -left-> ListJobApplicationService
+ListSortedApplicantsController -> PersistenceContext : repositories()
+
+PersistenceContext -> RepositoryFactory : create()
+
+RepositoryFactory -> JobOfferRepository : create()
+RepositoryFactory -left> JobApplicationRepository : create()
+
+ListJobOfferService .-> JobOfferRepository
+JobOfferRepository .-> JobOffer
+ListJobApplicationService .-> JobApplicationRepository
+JobApplicationRepository .-> JobApplication
+@enduml

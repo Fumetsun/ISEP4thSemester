@@ -1,0 +1,5 @@
+Lifeguard
+<TFANS>|In your experience you would say that a drowning person is not dangerous to the lifeguard. (T/F)|True_25
+<DATEANS>|What is your date of birth? (dd/MM/yyyy)|13/04/2004_25
+<TIMEANS>|What time can you come in during the civil work week, Monday through Friday? (HH:mm)|07:00_30
+<TEXTANS>|Can you describe yourself in 5 words or less? (Text Answer - Format: Word, Word, Word.)|Attentive_10|Dilligent_10

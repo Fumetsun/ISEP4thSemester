@@ -1,0 +1,16 @@
+#####################################################
+##
+## eCafeteria
+##
+#####################################################
+
+persistence.persistenceUnit=jobs4u.base
+
+persistence.repositoryFactory=jobs4u.base.persistence.jpa.JpaRepositoryFactory
+#persistence.repositoryFactory=jobs4u.base.persistence.inmemory.InMemoryRepositoryFactory
+
+ui.menu.layout=horizontal
+
+HighCaloriesDishLimit=300
+
+UseEventfulControllers=true

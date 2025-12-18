@@ -1,0 +1,110 @@
+@startuml US1005_DM_Excerpt
+
+package UserAggregate{
+	Entity LanguageEngineer {
+		<<entity>>
+	}
+	Entity Admin {
+		<<entity>>
+	}
+	Entity CustomerManager {
+		<<entity>>
+	}
+	Entity Operator {
+		<<entity>>
+	}
+	Entity Customer {
+		<<entity>>
+	}
+	class EmailAddress <<(V,#f09000) Identifier value Object>> {}
+	Entity User {
+		<<root entity>>
+	}
+	Class Password <<(V,#f04800) value Object>> {
+	}
+	Class Role  <<(V,#f04800) value Object>>{
+	}
+	Class Name <<(V,#f04800) value Object>> {
+	}
+}
+
+package JobOfferAggregate{
+	Entity JobOffer {
+		<<root entity>>
+	}
+	Class JobRefCode <<(V, #f09000) Identifier value Object>> {
+	}
+	Class JobTitle <<(V,#f04800) value Object>> {
+	}
+	Class ContractType  <<(V,#f04800) value Object>>{
+	}
+	Class JobMode <<(V,#f04800) value Object>> {
+	}
+	Class NumberOfVacancies <<(V,#f04800) value Object>> {
+	}
+	Class JobsDescription <<(V,#f04800) value Object>> {
+	}
+}
+
+Package CustomerEntityAggregate{
+	Entity CustomerEntity {
+		<<root entity>>
+	}
+	Class CompanyName <<(V,#f04800) value Object>> {
+	}
+	Class CompanyCode <<(V,#f09000) Identifier value Object>> {
+	}
+}
+
+Package ApplicationAggregate{
+	Entity Application  {
+		<<root entity>>
+	}
+	Class ApplicationAttachedFile <<(V,#f04800) value Object>> {
+	}
+	Class ApplicationRefCode <<(V,#f09000) Identifier value Object>> {
+	}
+	Class ApplicationAttachedFilesLocation <<(V,#f04800) value Object>> {
+	}
+	Class ApplicationEmail <<(V,#f04800) value Object>> {
+	}
+}
+Package CandidateAggregate{
+	Entity Candidate {
+		<<root entity>>
+	}
+	Class CandidatePhoneNumber <<(V,#f09000) Identity value Object>> {
+	}
+}
+
+CandidatePhoneNumber .- Candidate : > identifies
+
+Application "*" --> "1" JobOffer : > pertains to
+Application "1" - "1" ApplicationEmail : > contains
+Application "1" -- "1" ApplicationRefCode : describes <
+Application "1" -- "*" ApplicationAttachedFile : > contains
+Application "1" -- "1" ApplicationAttachedFilesLocation : > contains
+Candidate "1" ----- "*" Application : > makes
+CustomerEntity "1" -- "1" CompanyName : "describes" <
+CustomerEntity "1" -- "1" CompanyCode : describes <
+User "1" ---- "1" EmailAddress : identifies <
+CustomerEntity "1" -- "1" Address : "describes" <
+JobOffer "1" <- "1" CustomerEntity : > "posts"
+User "1" ---- "1" Role : classifies <
+User "1" ---- "1" Name : describes <
+JobOffer "1" ---- "1" JobRefCode : identifies <
+JobOffer "1" ---- "1" JobTitle : describes <
+JobOffer "1" ---- "1" ContractType : describes <
+JobOffer "1" ---- "1" JobMode : describes <
+JobOffer "1" ---- "1" NumberOfVacancies : describes <
+JobOffer "1" ---- "1" JobsDescription : "describes" <
+Admin  ----|> User
+CustomerManager ---|> User
+User "1" ---- "1" Password : describes <
+CustomerManager "1" ----> "*" CustomerEntity : > manages
+User "1" -- "*" JobOffer : > registers
+Operator ----|> User
+Customer --|> User
+Candidate --|> User
+Customer <---- JobOffer : < requests creation
+@enduml

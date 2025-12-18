@@ -1,0 +1,9 @@
+John Doe
+Application reference code: IBM-000123
+Subdirectory: outputDir/IBM-000123/1
+1-big-file-1.txt
+1-candidate-data.txt
+1-cv.txt
+1-email.txt
+1-report-1.txt
+

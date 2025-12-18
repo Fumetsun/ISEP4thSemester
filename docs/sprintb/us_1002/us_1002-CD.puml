@@ -1,0 +1,113 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class CustomerManagerUI{
+    + registerJobOffer()
+}
+
+class RegisterJobOfferUI{
+    - RegisterJobOfferController: theController
+    + doShow()
+    + showCustomerList()
+    + showInterviewModels()
+    + showRequirementsList()
+    + showJobModes()
+    + showContractTypes()
+}
+
+class RegisterJobOfferController{
+    - AuthorizationService authz
+    - FilteredCustomerListingService customerListingService
+    - ManagePluginService pluginService
+    - RegisterJobOfferService: jobOfferService
+    + createJobOffer()
+    + getPluginsList()
+    + getCustomerList()
+}
+
+class RegisterJobOfferService{
+    - JobOfferBuilder: jobOfferBuilder
+    - JobOfferRepository: repo
+    + addJobOffer()
+    + getOffers()
+    + findByRef()
+}
+
+class FilteredCustomerListingService{
+    - RegisterCustomerService: customerService
+    + allCustomersOfAManager(SystemUser: manager)
+}
+
+class RegisterCustomerService{
+    - CustomerRepository: repo
+    + allUsers()
+}
+
+class ManagePluginService{
+    - RegisteredPluginsRepository: repo
+    + getPluginsList()
+}
+
+class JobOfferBuilder{
+    - Customer: customer
+    - JobTitle: title
+    - ContractType: contract
+    - JobMode: mode
+    - NumberOfVacancies: vacancies
+    - JobDescription: description
+    - Address: address
+    - RegisteredPlugin: interviewModel
+    - RegisteredPlugin: requirementSpecification
+    + withCustomer()
+    + withJobTitle()
+    + withContractType()
+    + withJobMode()
+    + withVacancies()
+    + withDescription()
+    + withAddress()
+    + withInterviewModel()
+    + withRequirementSpecification()
+    + build()
+}
+class PersistenceContext{
+    + repositories()
+}
+
+class RepositoryFactory{
+    + newTransactionalContext()
+    + JobOffer(TransactionalContext var1)
+}
+
+class JobOfferRepository{
+    + findByRef(ref: Reference)
+    + findAllOffers()
+}
+
+class RegisteredPluginsRepository{
+    + findByRef(PluginFileName name);
+    + findAllPlugins()
+}
+
+class CustomerRepository{
+    + findByRef()
+    + findAllCustomers()
+}
+
+CustomerManagerUI .-> RegisterJobOfferUI
+RegisterJobOfferUI .-> RegisterJobOfferController
+RegisterJobOfferController -> PersistenceContext : repositories()
+PersistenceContext --> RepositoryFactory : create()
+
+RepositoryFactory  --> JobOfferRepository : create()
+RepositoryFactory  --> CustomerRepository : create()
+RepositoryFactory  --> RegisteredPluginsRepository : create()
+
+RegisterJobOfferController --> RegisterJobOfferService
+RegisterJobOfferController --> ManagePluginService
+RegisterJobOfferController --> FilteredCustomerListingService
+FilteredCustomerListingService --> RegisterCustomerService
+RegisterCustomerService --> CustomerRepository
+ManagePluginService --> RegisteredPluginsRepository
+RegisterJobOfferService --> JobOfferBuilder
+RegisterJobOfferService -> JobOfferRepository
+@enduml

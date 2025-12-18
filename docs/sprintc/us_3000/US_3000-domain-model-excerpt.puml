@@ -1,0 +1,57 @@
+@startuml
+
+Package JobOfferAggregate{
+    Entity JobOffer {
+        <<root entity>>
+    }
+
+    Class JobRefCode <<(V, #f09000) Identifier value Object>>{}
+    Class JobTitle <<(V,#f04800) value Object>>{}
+    Class ContractType  <<(V,#f04800) value Object>>{}
+    Class JobMode <<(V,#f04800) value Object>>{}
+    Class NumberOfVacancies <<(V,#f04800) value Object>>{}
+}
+
+Package ApplicationAggregate{
+
+    Entity Application  {
+        <<root entity>>
+    }
+
+    Class ApplicationAttachedFile <<(V,#f04800) value Object>>{}
+    Class ApplicationRefCode <<(V,#f09000) Identifier value Object>>{}
+    Class ApplicationAttachedFilesLocation <<(V,#f04800) value Object>>{}
+    Class InterviewGrade <<(V,#f04800) value Object>>{}
+    Class ApplicationState <<(V,#f04800) value Object>>{}
+    Class ApplicationEmail <<(V,#f04800) value Object>>{}
+    Class Rank <<(V,#f04800) value Object>>{}
+}
+
+Package CandidateAggregate{
+    Entity Candidate {
+        <<root entity>>
+    }
+
+    Class CandidatePhoneNumber <<(V,#f09000) Identity value Object>>{}
+}
+
+Candidate "1" ----- "*" Application : > makes
+Candidate .up- CandidatePhoneNumber : > identifies
+
+
+JobOffer "1" ---- "1" JobRefCode : identifies <
+JobOffer "1" ---- "1" JobTitle : describes <
+JobOffer "1" ---- "1" ContractType : describes <
+JobOffer "1" ---- "1" JobMode : describes <
+JobOffer "1" ---- "1" NumberOfVacancies : describes <
+
+Application "*" --down-> "1" JobOffer : > pertains to
+Application "1" - "1" ApplicationEmail : > contains
+Application "1" -- "1" ApplicationRefCode : describes <
+Application "1" -- "*" ApplicationAttachedFile : > contains
+Application "1" -- "1" ApplicationAttachedFilesLocation : > contains
+Application "1" -- "1" ApplicationState : > contains
+Application "1" -- "1" InterviewGrade : > contains
+Application - Rank : describes <
+
+@enduml

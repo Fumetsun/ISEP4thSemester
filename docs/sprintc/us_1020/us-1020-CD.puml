@@ -1,0 +1,46 @@
+@startuml
+
+class ResultsNotificationHandler {
+        - final AuthorizationService authz;
+        - static final int ASS_PORT_NUMBER;
+        - static InetAddress serverIP;
+        - static Socket sock;
+        - String serverIp;
+        - String password;
+        - JobOffer jobOffer;
+        + ResultsNotificationHandler(JobOffer jobOffer, String password)
+        + ResultsNotificationHandler(String password)
+        + Iterable<MessageDTO> getJobOffers()
+        + void emailCandidates()
+        + void sendEmail(MessageDTO message, ObjectOutputStream sOut)
+        + static void sendVersionAndCode(ObjectOutputStream sOut, int code)
+        + static void sendCredentials(ObjectOutputStream sOut, String username, String password)
+        + static void closeSocket()
+    }
+
+class PublishSelectionResultsUI {
+        - PublishSelectionResultsController ctrl
+        + boolean doShow()
+        + String headline()
+        + JobOffer showJobOffers(Iterable<MessageDTO> jobOffers)
+}
+
+
+class PublishSelectionResultsController {
+     + Iterable<MessageDTO> findAllOffers(String password)
+     + void publishResults(JobOffer offer, String password)
+}
+
+class MessageDTO {
+        - static long serialVersionUID
+        - String data
+        + MessageDTO(String data)
+        + String getData()
+        + String toString()
+        + byte[] getBytes()
+    }
+
+    PublishSelectionResultsUI -> PublishSelectionResultsController
+    PublishSelectionResultsController .-> ResultsNotificationHandler
+    ResultsNotificationHandler .-> MessageDTO
+@enduml

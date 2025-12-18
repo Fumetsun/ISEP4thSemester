@@ -1,0 +1,81 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant AdminUI
+participant UserActivationUI
+participant ManageUserController
+participant PersistenceContext
+participant RepositoryFactory
+participant UserRepository
+
+activate AdminUI
+
+AdminUI -> UserActivationUI : manageUsers()
+deactivate AdminUI
+activate UserActivationUI
+UserActivationUI -> ManageUserController : create()
+activate ManageUserController
+ManageUserController -> PersistenceContext : repositories()
+deactivate ManageUserController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> UserRepository : create()
+deactivate RepositoryFactory
+UserActivationUI -> ManageUserController : getUserList()
+deactivate UserActivationUI
+activate ManageUserController
+ManageUserController -> UserManagementService : getUserList()
+deactivate ManageUserController
+activate UserManagementService
+UserManagementService -> UserRepository : findAll()
+deactivate UserManagementService
+activate UserRepository
+UserRepository --> UserManagementService : users
+deactivate UserRepository
+activate UserManagementService
+deactivate UserRepository
+UserManagementService --> ManageUserController : users
+deactivate UserManagementService
+activate ManageUserController
+ManageUserController --> UserActivationUI : users
+deactivate ManageUserController
+activate UserActivationUI
+UserActivationUI -> UserActivationUI : doShow()
+
+alt if deactivating
+UserActivationUI -> ManageUserController : deactivate(User)
+deactivate UserActivationUI
+activate ManageUserController
+ManageUserController -> UserManagementService : deactivateUser(user)
+deactivate ManageUserController
+activate UserManagementService
+UserManagementService --> ManageUserController : user
+deactivate UserManagementService
+activate ManageUserController
+ManageUserController --> UserActivationUI : operation message
+deactivate ManageUserController
+activate UserActivationUI
+UserActivationUI -> UserActivationUI : doShow()
+
+else if activating
+
+UserActivationUI -> ManageUserController : activate(User)
+deactivate UserActivationUI
+activate ManageUserController
+ManageUserController -> UserManagementService : activateUser(user)
+deactivate ManageUserController
+activate UserManagementService
+UserManagementService --> ManageUserController : user
+deactivate UserManagementService
+activate ManageUserController
+ManageUserController --> UserActivationUI : operation message
+deactivate ManageUserController
+activate UserActivationUI
+UserActivationUI -> UserActivationUI : doShow()
+
+end alt
+@enduml

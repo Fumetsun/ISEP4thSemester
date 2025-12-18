@@ -1,0 +1,76 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor Candidate
+
+participant CandidateUI
+participant ListOwnCandidateApplicationsUI
+participant ListOwnCandidateApplicationsController
+participant ServerCandidateApplicationHandler
+participant FollowUpServer
+participant H2Database
+
+activate Candidate
+activate FollowUpServer
+note right FollowUpServer
+The activation bar is always active, since these 2 programs
+are, infact, running at the same time in 2 hosts. It is possible that
+the server doing more operations than the one expressed.
+end note
+
+Candidate -> CandidateUI : validate jobAplications
+    activate CandidateUI
+    CandidateUI -> ListOwnCandidateApplicationsUI : validateApplications()
+        activate ListOwnCandidateApplicationsUI
+            ListOwnCandidateApplicationsUI -> ListOwnCandidateApplicationsController : create()
+
+            ListOwnCandidateApplicationsUI --> Candidate : asks for password
+        deactivate ListOwnCandidateApplicationsUI
+
+Candidate -> ListOwnCandidateApplicationsUI : password
+        activate ListOwnCandidateApplicationsUI
+            ListOwnCandidateApplicationsUI -> ListOwnCandidateApplicationsController : listOwnApplications(password)
+            deactivate ListOwnCandidateApplicationsUI
+            activate ListOwnCandidateApplicationsController
+                ListOwnCandidateApplicationsController -> ServerCandidateApplicationHandler : getCandidateOwnApplications()
+                deactivate ListOwnCandidateApplicationsController
+                activate ServerCandidateApplicationHandler
+                    ServerCandidateApplicationHandler -> FollowUpServer : sendVersionAndCode(sOut, code)
+                    ServerCandidateApplicationHandler -> FollowUpServer : sendCredentials(sOut, username, password)
+                    deactivate ServerCandidateApplicationHandler
+
+                        FollowUpServer -> H2Database : findByRefCode(userRefCode)
+                        activate H2Database
+                            H2Database --> FollowUpServer : candidate
+                        deactivate H2Database
+                        FollowUpServer -> H2Database : findApplicationsByCandidate(candidate)
+                        activate H2Database
+                            H2Database --> FollowUpServer : applications
+                        deactivate H2Database
+                        loop
+                        FollowUpServer -> H2Database : findAllApplicationsOfJobOffer(applicationJobOffer)
+                        activate H2Database
+                            H2Database --> FollowUpServer : applicationsToOffer
+                        deactivate H2Database
+                        end loop
+
+                        FollowUpServer --> ServerCandidateApplicationHandler : applicationsInformation
+                    activate ServerCandidateApplicationHandler
+                    ServerCandidateApplicationHandler --> ListOwnCandidateApplicationsController : applicationsInformation
+                deactivate ServerCandidateApplicationHandler
+                activate ListOwnCandidateApplicationsController
+                ListOwnCandidateApplicationsController --> ListOwnCandidateApplicationsUI : applicationsInformation
+            deactivate ListOwnCandidateApplicationsController
+        activate ListOwnCandidateApplicationsUI
+
+        ListOwnCandidateApplicationsUI --> Candidate
+
+        deactivate ListOwnCandidateApplicationsUI
+    deactivate CandidateUI
+
+
+
+
+@enduml

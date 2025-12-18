@@ -1,0 +1,117 @@
+@startuml
+title US1016 Class Diagram
+
+
+class CandidateNotificationUI {
+    +requestsToNotifyCandidate()
+    +displaysCandidatesAvailable()
+    +requestsEmailInformation()
+    +inputsEmailContent(body: String)
+    +sendEmail(body: String, phoneNumber: String)
+    +displayOperationSuccess()
+}
+
+class CandidateNotificationController {
+    +sendEmail(body: String, phoneNumber: String)
+    +getLoggedUserWithPermission(permission: String): User
+    +findByNumber(phoneNumber: String): Candidate
+}
+
+class EmailNotificationHandler {
+    +sendEmail(candidate: Candidate, user: User, email: String)
+    +establishConnectionAndSendInfo()
+}
+
+class FollowUpServer {
+
+}
+
+class AuthorizationService {
+    +getLoggedUserWithPermission(permission: String): User
+}
+
+class UserManagementService {
+    +findByNumber(phoneNumber: String): Candidate
+}
+
+class MessageDTO{
+    +data : String
+
+    +getData : String
+
+}
+
+class SystemUser {
+        +Long version
+        +Username username
+        +Password password
+        +Name name
+        +EmailAddress email
+        +RoleSet roles
+        +Calendar createdOn
+        +boolean active
+        +Calendar deactivatedOn
+        +String resetToken
+        }
+
+class PersistenceContext{
+    +repositories()
+}
+
+class RepositoryFactory{
+
++newTransactionalContext();
+    + users(TransactionalContext var1);
+    + users();
+    + clientUsers(TransactionalContext var1);
+    + clientUsers();
+    + signupRequests(TransactionalContext var1);
+    + signupRequests();
+
+    }
+
+class UserRepository{
+    +findById(username)
+    +findAllActive()
+    +findAll()
+}
+
+class NotificationRepository{
+    +findById(id)
+    +findAll()
+}
+
+class Notification{
+    -candidate : SystemUser
+    -customerManager : SystemUser
+    -notifState : NotificationState
+    -notifInfo : NotificationInformation
+    -createdOn : CreationDate
+
+
+}
+
+
+
+
+note left of FollowUpServer
+
+The behaviour of the server is outside of Customer Manager App Scope
+
+end note
+
+CandidateNotificationController .right-> PersistenceContext
+PersistenceContext -> RepositoryFactory
+RepositoryFactory .-> UserRepository
+RepositoryFactory .-> NotificationRepository
+CandidateNotificationUI -- CandidateNotificationController
+CandidateNotificationController .- EmailNotificationHandler : delegates email sending to
+EmailNotificationHandler .- FollowUpServer : uses for connection
+EmailNotificationHandler .- MessageDTO : container for server data transfers
+CandidateNotificationController .- AuthorizationService : gets customer manager data from
+CandidateNotificationController .- UserManagementService : retrieves candidate data from
+UserManagementService .-> UserRepository
+AuthorizationService .-> UserRepository
+UserRepository .-> SystemUser : stores
+NotificationRepository .-> Notification : stores
+@enduml

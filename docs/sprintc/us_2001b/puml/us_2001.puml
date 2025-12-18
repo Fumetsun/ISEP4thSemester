@@ -1,0 +1,20 @@
+@startuml
+
+Process InputDirectory
+
+Process OutputDirectory
+
+Process Observer 
+
+Process Coordinator 
+
+Process Worker 
+
+Observer ---- Coordinator : > informs of new new files
+Worker --- Coordinator : < sends information
+Observer ------ InputDirectory : > surveils
+Worker ------- InputDirectory : > copies files from
+Coordinator ------ OutputDirectory : > creates reports
+Worker -- OutputDirectory : > creates directories and files
+
+@enduml

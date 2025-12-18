@@ -1,0 +1,61 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+Package NotificationAggregate{
+    Entity Notification  {
+            <<root entity>>
+        }
+    Class NotificationType <<(V,#f04800) value Object>>{}
+    Class CreationDate <<(V,#f04800) value Object>>{}
+
+}
+
+Package UserAggregate{
+    Entity LanguageEngineer {
+            <<entity>>
+    }
+
+    Entity Admin {
+        <<entity>>
+    }
+
+    Entity CustomerManager {
+        <<entity>>
+    }
+
+    Entity Operator {
+        <<entity>>
+    }
+
+    Entity Customer {
+        <<entity>>
+    }
+
+    Entity User {
+        <<root entity>>
+    }
+
+
+Notification -- CreationDate : < describes
+Notification - NotificationType : < describes
+Notification - User
+
+
+Class EmailAddress <<(V,#f09000) Identifier value Object>>{}
+    Class Password <<(V,#f04800) value Object>>{}
+    Class Role  <<(V,#f04800) value Object>>{}
+    Class Name <<(V,#f04800) value Object>>{}
+
+User "1" ---- "1" EmailAddress : identifies <
+User "1" ---- "1" Role : classifies <
+User "1" ---- "1" Name : describes <
+User "1" ---- "1" Password : describes <
+LanguageEngineer --|> User
+Customer --|> User
+Operator ----|> User
+CustomerManager ---|> User
+Candidate --|> User
+
+
+
+@enduml

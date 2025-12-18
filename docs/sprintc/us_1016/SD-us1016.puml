@@ -1,0 +1,127 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US1016 Sequence Diagram
+
+autonumber
+
+actor CustomerManager as act
+participant CandidateNotificationUI as ui
+participant CandidateNotificationController as ctrl
+participant EmailNotificationHandler as handler
+participant FollowUpServer as server
+participant AuthorizationService as authSvc
+participant UserManagementService as userSvc
+participant JobApplicationManagementService as canSvc
+participant NotificationManagementService as notifSvc
+participant NotificationFactory as notifFact
+participant NotificationRepository as notifRepo
+
+
+
+activate act
+act -> ui : requests to notify candidate
+deactivate act
+activate ui
+
+loop for each candidate
+ui -> ctrl : getMyCandidates()
+deactivate ui
+activate ctrl
+ctrl -> authSvc : getLoggedUserWithPermission(BaseRoles.CUSTOMER_MANAGER)
+deactivate ctrl
+activate authSvc
+authSvc --> ctrl : user
+deactivate authSvc
+activate ctrl
+ctrl ->  canSvc : getMyCandidates(user)
+deactivate ctrl
+activate canSvc
+canSvc --> ctrl : candidates
+deactivate canSvc
+activate ctrl
+ctrl --> ui : candidates
+deactivate ctrl
+activate ui
+
+ui --> act : displays candidates available
+deactivate ui
+activate act
+
+act -> ui : selects candidate
+deactivate act
+activate ui
+
+ui --> act : requests candidate information and password
+deactivate ui
+activate act
+
+act -> ui : inputs email content (candidate, password)
+deactivate act
+activate ui
+
+ui -> ctrl : sendEmail(candidate, password)
+deactivate ui
+activate ctrl
+
+ctrl -> authSvc : getLoggedUserWithPermission(BaseRoles.CUSTOMER_MANAGER)
+deactivate ctrl
+activate authSvc
+authSvc --> ctrl : user
+deactivate authSvc
+activate ctrl
+
+
+
+ctrl -> handler** : create(candidate, user, email)
+ctrl -> handler : run()
+activate handler
+
+handler -> server : establishes connection and sends information
+
+ref over server
+Refer to "Server Interaction US1016-SSD"
+end ref
+
+
+
+
+
+deactivate handler
+
+
+alt if email success
+
+ctrl -> notifSvc : registerNotification(user, candidate,notifInfo, NotificationType.EMAIL)
+deactivate ctrl
+activate notifSvc
+notifSvc -> notifFact : newNotification(user, candidate, NotificationType.EMAIL)
+deactivate notifSvc
+activate notifFact
+notifFact --> notifSvc : notification
+deactivate notifFact
+activate notifSvc
+notifSvc -> notifRepo : save(notification)
+deactivate notifSvc
+activate notifRepo
+notifRepo --> notifSvc : notification
+deactivate notifRepo
+activate notifSvc
+notifSvc --> ctrl
+deactivate notifSvc
+activate ctrl
+
+end if
+ctrl --> ui
+deactivate ctrl
+activate ui
+ui --> act : display operation success
+
+
+
+
+end loop
+
+
+
+@enduml

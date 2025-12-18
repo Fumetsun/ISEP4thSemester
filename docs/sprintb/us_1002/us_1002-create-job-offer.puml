@@ -1,0 +1,108 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant CustomerManagerUI
+participant RegisterJobOfferUI
+participant RegisterJobOfferController
+participant PersistenceContext
+participant RepositoryFactory
+participant RegisterJobOfferService
+participant JobOfferBuilder
+participant JobOfferRepository
+participant FilteredCustomerListingService
+participant RegisterCustomerService
+participant CustomerRepository
+participant ManagePluginService
+participant RegisteredPluginsRepository
+
+
+activate CustomerManagerUI
+CustomerManagerUI -> RegisterJobOfferUI : registerJobOffer()
+activate RegisterJobOfferUI
+RegisterJobOfferUI -> RegisterJobOfferController : create()
+activate RegisterJobOfferController
+RegisterJobOfferController -> PersistenceContext : repositories()
+deactivate RegisterJobOfferController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> JobOfferRepository : create()
+RepositoryFactory -> CustomerRepository : create()
+RepositoryFactory -> RegisteredPluginsRepository : create()
+deactivate RepositoryFactory
+RegisterJobOfferUI -> RegisterJobOfferController : getPluginList()
+deactivate RegisterJobOfferUI
+activate RegisterJobOfferController
+RegisterJobOfferController -> ManagePluginService : getPluginsList()
+deactivate RegisterJobOfferController
+activate ManagePluginService
+ManagePluginService -> RegisteredPluginsRepository : findAllPlugins()
+deactivate ManagePluginService
+activate RegisteredPluginsRepository
+RegisteredPluginsRepository --> ManagePluginService : plugins
+deactivate RegisteredPluginsRepository
+activate ManagePluginService
+ManagePluginService --> RegisterJobOfferController : plugins
+deactivate ManagePluginService
+activate RegisterJobOfferController
+RegisterJobOfferController --> RegisterJobOfferUI : plugins
+deactivate RegisterJobOfferController
+activate RegisterJobOfferUI
+
+RegisterJobOfferUI -> RegisterJobOfferController : getCustomerList()
+deactivate RegisterJobOfferUI
+activate RegisterJobOfferController
+RegisterJobOfferController -> FilteredCustomerListingService : allCustomersOfAManager(manager)
+deactivate RegisterJobOfferController
+activate FilteredCustomerListingService
+FilteredCustomerListingService -> RegisterCustomerService : allUsers()
+deactivate FilteredCustomerListingService
+activate RegisterCustomerService
+RegisterCustomerService -> CustomerRepository : findAll()
+deactivate RegisterCustomerService
+activate CustomerRepository
+CustomerRepository --> RegisterCustomerService : customers
+deactivate CustomerRepository
+activate RegisterCustomerService
+RegisterCustomerService --> FilteredCustomerListingService : customers
+deactivate RegisterCustomerService
+activate FilteredCustomerListingService
+FilteredCustomerListingService --> RegisterJobOfferController : customers
+deactivate FilteredCustomerListingService
+activate RegisterJobOfferController
+RegisterJobOfferController --> RegisterJobOfferUI : customers
+deactivate RegisterJobOfferController
+activate RegisterJobOfferUI
+
+RegisterJobOfferUI -> RegisterJobOfferUI : doShow()
+RegisterJobOfferUI -> RegisterJobOfferController : createJobOffer(customer, contractType, jobMode, numVacancies,\n jobDescription, jobTitle, jobAddress, interviewModel, requirement)
+deactivate RegisterJobOfferUI
+activate RegisterJobOfferController
+RegisterJobOfferController -> RegisterJobOfferService : addJobOffer(customer, contractType, jobMode, numVacancies,\n jobDescription, jobTitle, jobAddress, interviewModel, requirement)
+deactivate RegisterJobOfferController
+activate RegisterJobOfferService
+RegisterJobOfferService -> JobOfferBuilder : createJobOffer(customer, contractType, jobMode, numVacancies,\n jobDescription, jobTitle, jobAddress, interviewModel, requirement)
+deactivate RegisterJobOfferService
+activate JobOfferBuilder
+JobOfferBuilder --> RegisterJobOfferService : jobOffer
+deactivate JobOfferBuilder
+activate RegisterJobOfferService
+RegisterJobOfferService -> JobOfferRepository : addJobOffer(jobOffer)
+deactivate RegisterJobOfferService
+activate JobOfferRepository
+JobOfferRepository --> RegisterJobOfferService : jobOfer
+deactivate JobOfferRepository
+activate RegisterJobOfferService
+RegisterJobOfferService --> RegisterJobOfferController : jobOffer
+deactivate RegisterJobOfferService
+activate RegisterJobOfferController
+RegisterJobOfferController --> RegisterJobOfferUI : jobOffer
+deactivate RegisterJobOfferController
+activate RegisterJobOfferUI
+
+RegisterJobOfferUI --> CustomerManagerUI
+deactivate RegisterJobOfferUI
+@enduml

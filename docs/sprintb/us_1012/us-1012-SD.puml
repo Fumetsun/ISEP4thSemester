@@ -1,0 +1,54 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+participant CustomerManagerUI
+participant GenerateInterviewTemplateUI
+participant GenerateInterviewTemplateController
+participant PluginManagementService
+participant RegisteredPluginsRepository
+
+activate CustomerManagerUI
+CustomerManagerUI -> GenerateInterviewTemplateUI : generateTemplate
+deactivate CustomerManagerUI
+activate GenerateInterviewTemplateUI
+GenerateInterviewTemplateUI -> GenerateInterviewTemplateController : create()
+
+GenerateInterviewTemplateUI -> GenerateInterviewTemplateController : getInterviewPlugins()
+deactivate GenerateInterviewTemplateUI
+activate GenerateInterviewTemplateController
+GenerateInterviewTemplateController -> PluginManagementService : getInterviewPlugins()
+deactivate GenerateInterviewTemplateController
+activate PluginManagementService
+PluginManagementService -> RegisteredPluginsRepository : findAllInterview()
+deactivate PluginManagementService
+activate RegisteredPluginsRepository
+RegisteredPluginsRepository --> PluginManagementService : pluginsDTO
+deactivate RegisteredPluginsRepository
+activate PluginManagementService
+PluginManagementService --> GenerateInterviewTemplateController : pluginsDTO
+deactivate PluginManagementService
+activate GenerateInterviewTemplateController
+GenerateInterviewTemplateController --> GenerateInterviewTemplateUI : pluginsDTO
+deactivate GenerateInterviewTemplateController
+activate GenerateInterviewTemplateUI
+
+GenerateInterviewTemplateUI -> GenerateInterviewTemplateUI : doShow()
+GenerateInterviewTemplateUI -> GenerateInterviewTemplateController :generateTemplate(file, folder, choice)
+deactivate GenerateInterviewTemplateUI
+activate GenerateInterviewTemplateController
+GenerateInterviewTemplateController -> PluginHandler : activateTemplateFunction(file, answer)
+deactivate GenerateInterviewTemplateController
+activate PluginHandler
+note right : The rest of the process is performed by the plugin and out of project runtime scope
+PluginHandler --> GenerateInterviewTemplateController
+deactivate PluginHandler
+activate GenerateInterviewTemplateController
+GenerateInterviewTemplateController --> GenerateInterviewTemplateUI
+deactivate GenerateInterviewTemplateController
+activate GenerateInterviewTemplateUI
+GenerateInterviewTemplateUI --> CustomerManagerUI
+deactivate GenerateInterviewTemplateUI
+activate CustomerManagerUI
+autonumber
+
+@enduml

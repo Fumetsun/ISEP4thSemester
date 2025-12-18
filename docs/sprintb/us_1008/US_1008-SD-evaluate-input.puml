@@ -1,0 +1,74 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant LanguageEngineerUI
+participant EvaluateAnswersUI
+participant EvaluateAnswersController
+participant PersistenceContext
+participant RepositoryFactory
+participant PluginHandler
+participant RegisterdPluginFactory
+participant ManagePluginService
+participant RegisteredPluginsRepository
+
+activate LanguageEngineerUI
+LanguageEngineerUI -> EvaluateAnswersUI : evaluateAnswers()
+activate EvaluateAnswersUI
+EvaluateAnswersUI -> EvaluateAnswersController : create()
+activate EvaluateAnswersController
+EvaluateAnswersController -> PersistenceContext : repositories()
+deactivate EvaluateAnswersController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> RegisteredPluginsRepository : create()
+deactivate RepositoryFactory
+
+EvaluateAnswersUI -> EvaluateAnswersController : getAllPlugins()
+deactivate EvaluateAnswersUI
+activate EvaluateAnswersController
+EvaluateAnswersController -> ManagePluginService : allPlugins()
+deactivate EvaluateAnswersController
+activate ManagePluginService
+ManagePluginService -> RegisteredPluginsRepository : findAll()
+deactivate ManagePluginService
+activate RegisteredPluginsRepository
+RegisteredPluginsRepository --> ManagePluginService : plugins
+deactivate RegisteredPluginsRepository
+activate ManagePluginService
+ManagePluginService --> EvaluateAnswersController : plugins
+deactivate ManagePluginService
+activate EvaluateAnswersController
+EvaluateAnswersController --> EvaluateAnswersUI : plugins
+deactivate EvaluateAnswersController
+activate EvaluateAnswersUI
+EvaluateAnswersUI -> EvaluateAnswersUI : show()
+
+EvaluateAnswersUI -> EvaluateAnswersController : generateEvaluation(fileName, filePath, candidateInput)
+deactivate EvaluateAnswersUI
+activate EvaluateAnswersController
+EvaluateAnswersController -> PluginHandler : activateEvaluationFunctions(filePath, candidateInput)
+deactivate EvaluateAnswersController
+activate PluginHandler
+note right
+Accesses the plugin functionality
+[can't be repressented]
+end note
+PluginHandler --> EvaluateAnswersController
+deactivate PluginHandler
+activate EvaluateAnswersController
+EvaluateAnswersController --> EvaluateAnswersUI
+deactivate EvaluateAnswersController
+
+activate EvaluateAnswersUI
+EvaluateAnswersUI --> LanguageEngineerUI
+deactivate EvaluateAnswersUI
+deactivate LanguageEngineerUI
+
+
+
+
+@enduml

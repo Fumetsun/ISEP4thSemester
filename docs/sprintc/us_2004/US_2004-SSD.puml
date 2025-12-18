@@ -1,0 +1,29 @@
+@startuml
+
+title System Sequence Diagram - US 2004
+
+autonumber
+
+actor Operator
+participant System
+
+activate Operator
+
+	Operator -> System : Requests to upload candidate Job \nRequirement responses
+	activate System
+		System --> Operator : Shows a list of Job Applications associated\nwith that Operator
+	deactivate System
+
+	Operator -> System : Chooses the intended application
+	activate System
+		System --> Operator : Requests the file path
+	deactivate System
+
+	Operator -> System : Enters the file path
+	activate System
+		System --> Operator : Shows file validation output
+	deactivate System
+
+deactivate Operator
+
+@enduml

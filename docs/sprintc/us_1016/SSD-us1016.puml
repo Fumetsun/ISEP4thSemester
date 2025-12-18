@@ -1,0 +1,42 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US1016 System Sequence Diagram
+
+autonumber
+
+actor CustomerManager as act
+participant System as sys
+
+
+activate act
+act -> sys : requests to notify candidate
+deactivate act
+activate sys
+
+loop for each candidate
+sys --> act : displays candidates available
+deactivate sys
+activate act
+
+act -> sys : selects candidate
+deactivate act
+activate sys
+
+sys --> act : requests candidate and password
+deactivate sys
+activate act
+
+act -> sys : inputs information
+deactivate act
+activate sys
+
+sys --> act : displays operation result
+deactivate sys
+
+
+end loop
+
+
+
+@enduml

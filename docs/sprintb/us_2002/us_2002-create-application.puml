@@ -1,0 +1,111 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant OperatorUI
+participant RegisterApplicationUI
+participant RegisterApplicationController
+participant PersistenceContext
+participant RepositoryFactory
+participant JobApplicationManagementService
+participant ApplicationRepository
+participant JobOfferRepository
+participant CandidateRepository
+
+activate OperatorUI
+OperatorUI -> RegisterApplicationUI : registerJobOffer()
+deactivate OperatorUI
+activate RegisterApplicationUI
+RegisterApplicationUI -> RegisterApplicationController : create()
+activate RegisterApplicationController
+RegisterApplicationController -> PersistenceContext : repositories()
+deactivate RegisterApplicationController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> ApplicationRepository : create()
+deactivate RepositoryFactory
+RegisterApplicationUI -> RegisterApplicationController : getData()
+deactivate RegisterApplicationUI
+activate RegisterApplicationController
+RegisterApplicationController -> JobApplicationManagementService : getdata()
+deactivate RegisterApplicationController
+activate JobApplicationManagementService
+JobApplicationManagementService -> JobOfferRepository : findAll()
+deactivate JobApplicationManagementService
+activate JobOfferRepository
+JobOfferRepository --> JobApplicationManagementService : jobOffers
+deactivate JobOfferRepository
+activate JobApplicationManagementService
+JobApplicationManagementService -> CandidateRepository : findAll()
+deactivate JobApplicationManagementService
+activate CandidateRepository
+CandidateRepository --> JobApplicationManagementService : candidates
+deactivate CandidateRepository
+activate JobApplicationManagementService
+JobApplicationManagementService -> JobApplicationManagementService : candidates.toDTO()
+JobApplicationManagementService -> JobApplicationManagementService : jobOffers.toDTO()
+note right: the classes "Candidate" and "JobOffer" implement the "DTOable" interface, their conversion to \na DTO will be done using the interface method and will become easier to understand with the CD
+JobApplicationManagementService --> RegisterApplicationController : data
+deactivate JobApplicationManagementService
+activate RegisterApplicationController
+RegisterApplicationController --> RegisterApplicationUI : data
+deactivate RegisterApplicationController
+activate RegisterApplicationUI
+RegisterApplicationUI -> RegisterApplicationUI : doShow()
+alt if candidate not in the system
+    RegisterApplicationUI -> RegisterApplicationController : importCanidateInfo(firstName,LastName)
+    deactivate RegisterApplicationUI
+    activate RegisterApplicationController
+    RegisterApplicationController -> RegisterCandidateService : importCandidateInfo(file)
+    deactivate RegisterApplicationController
+    activate RegisterCandidateService
+    RegisterCandidateService --> RegisterApplicationController : candidate
+    deactivate RegisterCandidateService
+    activate RegisterApplicationController
+    RegisterApplicationController --> RegisterApplicationUI : candidate
+    deactivate RegisterApplicationController
+    activate RegisterApplicationUI
+    RegisterApplicationUI -> RegisterApplicationUI : doShow()
+end alt
+RegisterApplicationUI -> RegisterApplicationController : registerApplication(candidateOption, JobOfferOption)
+deactivate RegisterApplicationUI
+activate RegisterApplicationController
+
+
+RegisterApplicationController -> JobApplicationManagementService : registerApplication(candidateOption, JobOfferOption)
+deactivate RegisterApplicationController
+activate JobApplicationManagementService
+JobApplicationManagementService -> CandidateRepository : findByNumber(CandidatePhoneNumber)
+deactivate JobApplicationManagementService
+activate CandidateRepository
+CandidateRepository --> JobApplicationManagementService : candidate
+deactivate CandidateRepository
+activate JobApplicationManagementService
+JobApplicationManagementService -> JobOfferRepository : findWithRefCode(jobOfferOption)
+deactivate JobApplicationManagementService
+activate JobOfferRepository
+JobOfferRepository --> JobApplicationManagementService : jobOffer
+deactivate JobOfferRepository
+activate JobApplicationManagementService
+JobApplicationManagementService -> ApplicationRepository : addApplication(jobOffer, candidate)
+deactivate JobApplicationManagementService
+activate ApplicationRepository
+ApplicationRepository --> ApplicationRepository : save()
+ApplicationRepository --> JobApplicationManagementService : application
+deactivate ApplicationRepository
+activate JobApplicationManagementService
+JobApplicationManagementService --> RegisterApplicationController : application
+deactivate JobApplicationManagementService
+activate RegisterApplicationController
+RegisterApplicationController --> RegisterApplicationUI : application
+deactivate RegisterApplicationController
+activate RegisterApplicationUI
+RegisterApplicationUI --> OperatorUI
+deactivate RegisterApplicationUI
+activate OperatorUI
+
+
+@enduml

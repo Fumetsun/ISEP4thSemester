@@ -1,0 +1,83 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US1020 - Client Server SD
+
+participant ResultsNotificationHandler as HANDLER
+participant FollowUpServer as SERVER
+activate SERVER
+participant H2Database as DB
+
+autonumber 7
+
+-> HANDLER
+activate HANDLER
+
+HANDLER -> SERVER : sendVersionAndCode(sOut, code)
+
+HANDLER -> SERVER : sendCredentials(sOut, username, password)
+
+SERVER -> SERVER : retrieveOffers()
+SERVER -> DB : findAllOffersOfManager(user)
+activate DB
+DB --> SERVER : offers
+deactivate DB
+SERVER --> HANDLER : offers
+
+<-- HANDLER : offers
+deactivate HANDLER
+
+autonumber 21
+-> HANDLER
+activate HANDLER
+
+HANDLER -> SERVER : sendVersionAndCode(sOut, code)
+
+HANDLER -> SERVER : sendCredentials(sOut, username, password)
+
+HANDLER -> SERVER : sendVersionAndCode(sOut, code)
+
+HANDLER -> SERVER : sendEmail(message, sOut)
+
+deactivate HANDLER
+SERVER -> SERVER : emailParticipants(offerInfo)
+
+group emailParticipants
+    SERVER -> DB : findByRef(offerInfo)
+    activate DB
+    DB --> SERVER : jobOffer
+    SERVER -> DB : getRankingsofJobOffer(jobOffer)
+    DB --> SERVER : rankings
+    deactivate DB
+
+    loop for all rankings in applications
+        opt ApplicationState == ACCEPTED
+            SERVER -> SERVER : TcpSrvEmailThread(from, to, subject, body)
+
+            note left
+                sends the email to the candidate.
+            end note
+        end opt
+    end loop
+
+    SERVER -> SERVER : TcpSrvEmailThread(from, to, subject, body)
+
+    note left
+        sends the email to the customer.
+    end note
+end group
+deactivate HANDLER
+
+SERVER --> HANDLER
+activate HANDLER
+<-- HANDLER
+deactivate HANDLER
+
+
+
+
+
+
+
+
+@enduml

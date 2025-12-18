@@ -1,0 +1,105 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "launch/debug - default",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/app_file_bot",
+      "args": [
+        "inputDir",
+        "outputDir",
+        "5"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "build",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "logging": {
+        "engineLogging": true
+      }
+    },
+    {
+      "name": "launch/debug - tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/tests/file_bot_tester",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/tests",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "tests",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "logging": {
+        "engineLogging": true
+      }
+    },
+    {
+      "name": "follow child attempt",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceRoot}/app_file_bot",
+      "args": [
+        "inputDir",
+        "outputDir",
+        "5"
+      ],
+      "cwd": ".",
+      "setupCommands": [
+        {
+          "description": "gdb fancy printing",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "gdb attach to processes on fork (?)",
+          "text": "-gdb-set detach-on-fork off",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Process is debugged after a fork (?), parent runs as usual",
+          "text": "-gdb-set follow-fork-mode child",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": ".",
+      "program": "build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

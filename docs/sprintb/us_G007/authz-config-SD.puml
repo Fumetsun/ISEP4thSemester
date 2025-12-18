@@ -1,0 +1,21 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title UG007 - User Login Authentorization (SSD)
+
+participant "BaseBackoffice" as BaseBackoffice
+participant "AuthzRegistry" as AuthzRegistry
+
+-> BaseBackoffice
+activate BaseBackoffice
+BaseBackoffice -> AuthzRegistry : configure(PersistenceContext.repositories().users(),\n new BasePasswordPolicy(), new PlainTextEncoder())
+deactivate BaseBackoffice
+activate AuthzRegistry
+note right : System will configure the authorization/authentication parameter for this execution of the software \naccording to the functions passed as parameters with configure() to the Authorization module
+BaseBackoffice <-- AuthzRegistry
+activate BaseBackoffice
+
+
+@enduml

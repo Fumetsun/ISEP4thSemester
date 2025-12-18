@@ -1,0 +1,51 @@
+@startuml
+
+() User
+
+[Questions_Template.txt]
+
+[Candidate_Answers.txt]
+
+folder "Plugin Folder" {
+    node "Job Requirement Plugin (Example)" {
+        () Request_Template_Service
+        () Evaluate_File_Service
+        Request_Template_Service -down- [JR_Library / .g4 file]
+        Evaluate_File_Service -left- [JR_Library / .g4 file] : ______
+
+    }
+
+    node "Interview Plugin (Example)" {
+            [I_Library / .g4 file]
+        }
+}
+
+package "Jobs4u Application"{
+   [Plugin_Handler]
+}
+
+database "Database"{
+    frame "Plugins"{
+    [Plugins_Repository]
+    }
+}
+
+User -right-> [Plugin_Handler] : requests template
+[Plugin_Handler] -down-> Request_Template_Service : requests questions template
+[JR_Library / .g4 file] .down.> Request_Template_Service
+Request_Template_Service .up.> [JR_Library / .g4 file]
+Request_Template_Service -right-> [Questions_Template.txt] : generates
+[Questions_Template.txt] .up.> User
+
+User -right-> [Plugin_Handler] : commits a file with answers
+[Plugin_Handler] ----> Evaluate_File_Service : links file to evaluate
+[Candidate_Answers.txt] .down.> Evaluate_File_Service
+User .. [Candidate_Answers.txt]
+Evaluate_File_Service .left.> [JR_Library / .g4 file] : .
+[JR_Library / .g4 file] .right.> Evaluate_File_Service : .
+Evaluate_File_Service -up-> [Plugin_Handler] : returns evaluation
+
+User -right-> [Plugin_Handler] : imports a plugin
+[Plugin_Handler] -right-> [Plugins_Repository] : stores
+
+@enduml

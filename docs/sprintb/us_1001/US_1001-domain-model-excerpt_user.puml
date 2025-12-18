@@ -1,0 +1,51 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package UserAggregate{
+Entity LanguageEngineer {
+        <<entity>>
+    }
+Entity Admin {
+    <<entity>>
+}
+Entity CustomerManager {
+    <<entity>>
+}
+Entity Operator {
+    <<entity>>
+}
+Entity Customer {
+    <<entity>>
+}
+Entity Candidate {
+    <<entity>>
+}
+    class EmailAddress <<(V,#f09000) Identifier value Object>> {}
+    Entity User {
+        <<root entity>>
+    }
+
+    Class Password <<(V,#f04800) value Object>> {
+
+    }
+    Class Role  <<(V,#f04800) value Object>>{
+
+    }
+    Class Name <<(V,#f04800) value Object>> {
+
+    }
+
+}
+
+LanguageEngineer --|> User
+User "1" ---- "1" EmailAddress : identifies <
+User "1" ---- "1" Role : classifies <
+User "1" ---- "1" Name : describes <
+Admin  ----|> User
+CustomerManager ---|> User
+User "1" ---- "1" Password : describes <
+Operator ----|> User
+Customer --|> User
+Candidate --|> User
+
+@enduml

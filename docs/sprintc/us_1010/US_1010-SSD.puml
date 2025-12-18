@@ -1,0 +1,32 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title System Sequence Diagram - US 1010
+
+autonumber
+actor CustomerManager
+participant System
+
+activate CustomerManager
+CustomerManager -> System: Requests to change a phase from a JobOffer
+
+activate System
+System --> CustomerManager: Displays all job offers from the Customer Manager
+deactivate System
+
+CustomerManager -> System: Selects one of them to change the phase
+
+activate System
+System --> CustomerManager: Shows the current phase and list of all the phases
+deactivate System
+
+CustomerManager -> System : Chooses to increment/decrease current phase
+activate System
+alt If it's possible
+System --> CustomerManager : Changes current phase and shows operation sucess
+else If it's not possible
+System --> CustomerManager : Doesn't change phase and states why it's not possible
+end alt
+
+
+@enduml

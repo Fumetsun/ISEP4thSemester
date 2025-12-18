@@ -1,0 +1,30 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US3002 - Client Server SD
+
+participant ServerCustomerOffersHandler as HANDLER
+participant FollowUpServer as SERVER
+activate SERVER
+participant H2Database as DB
+
+autonumber 8
+
+-> HANDLER
+activate HANDLER
+
+HANDLER -> SERVER : sendVersionAndCode(sOut, code)
+
+HANDLER -> SERVER : sendCredentials(sOut, username, password)
+
+SERVER -> SERVER : retrieveOffers()
+SERVER -> DB : findAllOffersOfCustomer(customer)
+activate DB
+DB --> SERVER : jobOffers
+deactivate DB
+SERVER --> HANDLER : jobOffers
+
+<-- HANDLER : jobOffers
+deactivate HANDLER
+
+@enduml

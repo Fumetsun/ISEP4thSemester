@@ -1,0 +1,36 @@
+@startuml
+
+Entity JobOffer {
+        <<root entity>>
+    }
+
+Package RecruitmentProcessAggregate{
+
+    Entity RecruitmentProcess {
+            <<root entity>>
+    }
+
+    Class CurrentPhase <<(V,#f04800) value Object>> {}
+    Class AllPhases <<(V,#f04800) value Object>> {}
+
+
+    Class RecruitmentPhase <<(V,#f04800) value Object>> {}
+    Class RecruitmentProcessRefCode <<(V,#f09000) Identifier value Object>>{}
+    Class RecruitmentPhaseName <<(V,#f04800) value Object>>{}
+    Class RecruitmentPhaseDescription <<(V,#f04800) value Object>>{}
+    Class RecruitmentPhaseTimeFrame <<(V,#f04800) value Object>>{}
+}
+
+JobOffer "1" -right-> "1" RecruitmentProcess : "executes"
+
+RecruitmentProcess "1" -- "*" CurrentPhase : contains >
+RecruitmentProcess "1" -- "*" AllPhases : contains >
+RecruitmentPhase "1" -up. "1" CurrentPhase : describes >
+RecruitmentPhase "1" -up. "1" AllPhases : describes >
+RecruitmentProcess "1" -- "1" RecruitmentProcessRefCode : identifies <
+RecruitmentPhase "1" - "1" RecruitmentPhaseName : describes <
+RecruitmentPhase "1" -- "1" RecruitmentPhaseDescription : describes <
+RecruitmentPhase "1" -- "1" RecruitmentPhaseTimeFrame : describes <
+
+
+@enduml

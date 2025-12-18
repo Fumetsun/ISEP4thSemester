@@ -1,0 +1,41 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant CustomerManager as cm
+participant System as sys
+
+activate cm
+cm -> sys : requests to rank clients
+deactivate cm
+activate sys
+sys --> cm : presents job offer list
+deactivate sys
+activate cm
+cm -> sys : selects job offer
+deactivate cm
+activate sys
+sys --> cm : presents current ranking
+deactivate sys
+activate cm
+loop for every candidate position changed
+
+cm -> sys : picks candidates to swap positions
+deactivate cm
+activate sys
+sys --> cm : returns new ranking
+deactivate sys
+activate cm
+
+end
+
+cm -> sys : confirms ranking
+deactivate cm
+activate sys
+sys -> cm  : operation success message
+deactivate sys
+activate cm
+
+
+@enduml

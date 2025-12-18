@@ -1,0 +1,87 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US1020 - Publish Job Offer - SD
+
+autonumber
+
+actor "Customer Manager" as actor
+participant PublishSelectionResultsUI as UI
+participant PublishSelectionResultsController as CTRL
+participant ResultsNotificationHandler as HANDLER
+participant FollowUpServer as SERVER
+
+
+
+activate actor
+actor -> UI : requests to publish a job offer
+activate UI
+UI -> CTRL : create()
+UI --> actor : requests for identity verification
+deactivate UI
+actor -> UI : inputs requested info
+activate UI
+UI -> CTRL : findAllOffers(password)
+deactivate UI
+activate CTRL
+CTRL -> HANDLER : ResultsNotificationHandler(password)
+deactivate CTRL
+activate HANDLER
+HANDLER -> SERVER
+deactivate HANDLER
+
+ref over SERVER
+    Refer to us-1020-SD-server-interaction
+end ref
+
+activate SERVER
+autonumber 14
+SERVER --> HANDLER : jobOffers
+deactivate SERVER
+activate HANDLER
+HANDLER --> CTRL : jobOffers
+deactivate HANDLER
+activate CTRL
+CTRL --> UI : jobOffers
+deactivate CTRL
+activate UI
+UI --> actor : requests to pick a job offer
+deactivate UI
+actor -> UI : chooses job offer
+activate UI
+UI -> CTRL : publishResults(jobOffer, password)
+deactivate UI
+activate CTRL
+
+CTRL -> HANDLER : ResultsNotificationHandler(jobOffer, password)
+deactivate CTRL
+activate HANDLER
+HANDLER -> SERVER
+
+ref over SERVER
+    Refer to us-1020-SD-server-interaction
+end ref
+
+autonumber 34
+deactivate HANDLER
+activate SERVER
+SERVER --> HANDLER
+deactivate SERVER
+activate HANDLER
+HANDLER --> CTRL
+deactivate HANDLER
+activate CTRL
+CTRL --> UI
+deactivate CTRL
+activate UI
+UI --> actor
+deactivate UI
+
+
+
+
+
+
+
+
+@enduml

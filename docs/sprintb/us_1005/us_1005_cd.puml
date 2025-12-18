@@ -1,0 +1,105 @@
+@startuml US1005_cd
+'https://plantuml.com/class-diagram
+
+class CustomerManagerUI {
+	+ getApplications()
+}
+
+class ListApplicationsUI {
+	+ getApplications()
+}
+
+class ListApplicationsController {
+	+ getCustomers()
+	+ getJobOpenings(username)
+	+ getApplications(jobRefCode)
+}
+
+class PersistenceContext {
+	+ repositories()
+}
+
+class RepositoryFactory {
+	+ newTransactionalContext()
+	+ users(TransactionalContext var1)
+	+ users()
+	+ signupRequests(TransactionalContext var1)
+	+ signupRequests()
+}
+
+class JobOfferRepository {
+}
+
+class JobApplicationRepository {
+}
+
+class FilteredCustomerListingService {
+	+ allCustomersOfManager(SystemUser manager) : Iterable<Custome.->
+}
+
+class ListJobOfferService {
+	+ getJobOffersByUser(Customer customer) : Iterable<JobOffe.->
+}
+
+class ListJobApplicationService {
+	+ getApplicationsByOffer(JobOffer offer) : Iterable<JobOffe.->
+}
+
+class CustomerDTO {
+	- String customerCode
+	- String customerName
+	- String customerAddress
+	- String customerManagerUser
+	- String customerUser
+	+ toString()
+	+ getCustomerCode()
+	+ getCustomerName()
+	+ getCustomerManager()
+	+ getCustomerUser()
+}
+
+class JobApplicationDTO {
+	- String email
+	- String filesPath
+	- String attachedFile
+	- int jobRefCode
+	- String candidate
+	+ toString()
+	+ getEmail()
+	+ getFilesPath()
+	+ getAttachedFile()
+	+ getJobRefCode()
+	+ getCandidate()
+}
+
+class JobOfferDTO {
+	- String refCode
+	- String title
+	- String jobMode
+	- String numberVacancies
+	+ toString()
+    + getRefCode()
+    + getTitle()
+    + getJobMode()
+    + getNumberVacancies()
+}
+
+CustomerManagerUI .-> ListApplicationsUI
+ListApplicationsUI .-> ListApplicationsController : create()
+ListApplicationsUI .-> CustomerDTO
+ListApplicationsUI .-> JobOfferDTO
+ListApplicationsUI .-> JobApplicationDTO
+ListApplicationsController .-> PersistenceContext : repositories()
+ListApplicationsController .-> CustomerDTO
+ListApplicationsController .-> JobOfferDTO
+ListApplicationsController .-> JobApplicationDTO
+ListApplicationsController .-> FilteredCustomerListingService : allCustomersOfManager()
+ListApplicationsController .-> ListJobOfferService : getJobOpenings()
+ListApplicationsController .-> ListJobApplicationService : getApplications()
+FilteredCustomerListingService .-> CustomerRepository
+ListJobApplicationService .-> JobApplicationRepository
+ListJobOfferService .-> JobOfferRepository
+PersistenceContext .-> RepositoryFactory : create()
+RepositoryFactory .-> CustomerRepository : create()
+RepositoryFactory .-> JobApplicationRepository : create()
+RepositoryFactory .-> JobOfferRepository : create()

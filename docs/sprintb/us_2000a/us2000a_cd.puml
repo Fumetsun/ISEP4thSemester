@@ -1,0 +1,130 @@
+@startuml US2000a_cd
+'https://plantuml.com/class-diagram
+
+class OperatorUI {
+    + registerCandidate()
+}
+
+class PersistenceContext {
+    + repositories()
+}
+
+class RepositoryFactory {
+	+ newTransactionalContext()
+    + users(TransactionalContext var1)
+    + users()
+    + signupRequests(TransactionalContext var1)
+    + signupRequests()
+}
+
+class ListUsersController {
+    - authz : AuthorizationService
+    - userSvc : UserManagementService
+    - filtService : FilteredUserListingService
+    + allUsers() : Iterable<SystemUser>
+    + find(final Username u) : Optional<SystemUser> 
+    + backOfficeusers() : Iterable<SystemUser> 
+}
+
+class CandidateService {
+    - authz : AuthorizationService 
+    - repo : ClientUserRepository 
+    + findClientUserByMecNumber : Optional<ClientUser> 
+    + findClientUserByUsername : Optional<ClientUser>
+}
+
+class CandidateFactory {
+	- number : MecanographicNumber
+	- user : SystemUser
+	+ newCandidate(user, number) : Candidate
+}
+
+class UserManagementService {
+    - userRepository: UserRepository
+    - encoder: PasswordEncoder
+    - policy: PasswordPolicy
+    + registerNewUser()
+    + allUsers()
+    + userOfIdentity()
+}
+
+class UserRepository {
+}
+
+class CandidateRepository {
+}
+
+class CandidateFactory {
+	+ createCandidate(SystemUser user,\nMecanographicNumber number) : Candidate
+}
+
+class RegisterCandidateController {
+	+ registerCandidate(number, email, firstName, lastName)
+}
+
+class PasswordGeneratorService {
+    + generateModeledPassword()
+}
+
+class PasswordGeneratorService {
+}
+
+class RegisterCandidateUI {
+}
+
+class ListRolesService{
+    + listSystemRoles()
+}
+
+class SystemUserBuilder {
+    - username: Username
+    - password: Password
+    - name: Name
+    - email: EmailAddress
+    - createdOn: Calendar
+    - roles: RoleSet
+    - policy: PasswordPolicy
+    - encoder: PasswordEncoder
+    + with()
+    + withUsername()
+    + withPassword()
+    + withName()
+    + withEmail()
+    + withRoles()
+    + createdOn()
+    + build()
+}
+
+class CandidateDTO {
+	- String firstName
+	- String lastName
+	- String EmailAddress
+	- MecanographicNumber number
+	+ toString()
+	+ getFirstName()
+	+ getLastName()
+	+ getEmailAddress()
+	+ getNumber()
+}
+
+OperatorUI .-> RegisterCandidateUI : registerCandidate()
+RegisterCandidateUI .-> RegisterCandidateController : create()
+RegisterCandidateUI .-> CandidateDTO
+RegisterCandidateController .-> PersistenceContext : repositories()
+RegisterCandidateController .-> PasswordGeneratorService
+RegisterCandidateController .-> UserManagementService : registerNewUser()
+RegisterCandidateController .-> CandidateFactory
+RegisterCandidateController .-> ListRolesService
+RegisterCandidateController .-> ListUsersController : find()
+RegisterCandidateController .-> CandidateService : findByNumber()
+RegisterCandidateController .-> CandidateDTO
+CandidateService .-> CandidateRepository : ofIdentity()
+CandidateFactory .-> CandidateRepository
+ListUsersController .-> UserManagementService : userOfIdentity()
+PersistenceContext --> RepositoryFactory : create()
+RepositoryFactory  --> UserRepository : create()
+RepositoryFactory  --> CandidateRepository : create()
+UserManagementService --> UserRepository 
+UserManagementService .-> SystemUserBuilder
+
+@enduml

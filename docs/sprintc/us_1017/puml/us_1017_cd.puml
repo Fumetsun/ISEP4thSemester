@@ -1,0 +1,117 @@
+@startuml US1017_CD
+'https://plantuml.com/class-diagram
+
+title Class Diagram - US 1017
+
+class MainMenu {
+}
+
+class SaveResponsesUI {
+	+ show()
+}
+
+class SaveResponsesController {
+	+ create()
+	+ getJobOffers() : Iterable<JobOfferDTO>
+	+ checkInterview(JobOfferDTO offerDTO) : boolean
+	+ validateResponses(String filePath) : boolean
+	+ getJobApplications(JobOfferDTO offerDTO) : Iterable<ApplicationDTO>
+	+ getJobApplicationByDTO(ApplicationDTO appdto) : boolean 
+	+ checkAnswerAlreadyExists(ApplicationDTO appdto) : boolean 
+	+ deleteOldAnswers(ApplicationDTO appdto) : boolean 
+	+ saveResponses(applicationDTO, filePath)
+}
+
+class PersistenceContext {}
+
+class RepositoryFactory {}
+
+class ListJobOfferService {
+	+ getJobOffersOfManager(SystemUser manager) : Iterable<JobOfferDTO> 
+}
+
+class JobOfferRepository {
+	+ findAllOffersOfManager(SystemUser manager) : Iterable<JobOffer> 
+}
+
+class JobOffer {
+	+ toDTO() : JobOfferDTO
+}
+
+class ListJobApplicationService {
+	+ getJobApplications(JobRefCode jobCode) : Iterable<ApplicationDTO> 
+	+ findByRef(JobRefCode refCode) : Optional<JobApplication>
+}
+
+class JobApplicationManagementService {
+	+ findByRef(JobRefCode refCode) : Optional<JobApplication>
+	+ saveResponses(JobApplication application, String filePath)
+}
+
+class JobApplicationRepository {
+	+ findApplicationsOfJobOffer(JobOffer offer) : Iterable<JobApplication> 
+}
+
+class JobApplication {
+	+ toDTO() : ApplicationDTO
+	+ addFileRef(String file)
+}
+
+class PluginHandlerService {
+	+ activateCheckerFunction(String filePath) : boolean
+}
+
+class ImportFileService {
+	+ importApplicantAnswers(String srcFile, String dstPath)
+	+ removeFile(String path, String file)
+}
+
+class RegisteredPlugin {}
+
+class ApplicationDTO {
+	- String email
+	- String filesPath
+	- String attachedFile
+	- int jobRefCode
+	- String candidate
+	+ toString()
+	+ getEmail()
+	+ getFilesPath()
+	+ getAttachedFile()
+	+ getJobRefCode()
+	+ getCandidate()
+}
+
+class JobOfferDTO {
+	- String refCode
+	- String title
+	- String jobMode
+	- String numberVacancies
+	+ toString()
+    + getRefCode()
+    + getTitle()
+    + getJobMode()
+    + getNumberVacancies()
+}
+
+MainMenu .-> SaveResponsesUI : show()
+SaveResponsesUI .-> SaveResponsesController : create()
+SaveResponsesController .-> PersistenceContext
+SaveResponsesController .-> ListJobOfferService
+SaveResponsesController .-> PluginHandlerService
+SaveResponsesController .-> ListJobApplicationService
+SaveResponsesController .-> JobApplicationManagementService
+SaveResponsesController .-> ImportFileService
+PersistenceContext .-> RepositoryFactory : create()
+ListJobOfferService .-> JobOfferRepository
+ListJobOfferService .-> JobOffer
+JobOffer .-> JobOfferDTO : create
+JobOffer .-> RegisteredPlugin
+ListJobApplicationService .-> JobApplicationRepository
+ListJobApplicationService .-> JobApplication
+JobApplication .-> ApplicationDTO : create
+JobApplication .-> JobOffer
+JobApplicationManagementService .-> JobApplicationRepository
+JobApplicationManagementService .-> JobApplication
+
+@enduml

@@ -1,0 +1,121 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class AdminUI{
+    +registerUser()
+    +getUserList()
+    +manageUsers()
+}
+
+class UserActivationUI{
+    +getUserList()
+    +doShow()
+    +activateUser(user)
+    +deactivateUser(user)
+}
+
+class UserActivationController{
+    +getUserList()
+    +activateUser(user)
+    +deactivateUser(user)
+}
+
+class PersistenceContext{
+    +repositories()
+}
+
+class RepositoryFactory{
+
++newTransactionalContext();
+    + users(TransactionalContext var1);
+    + users();
+    + clientUsers(TransactionalContext var1);
+    + clientUsers();
+    + signupRequests(TransactionalContext var1);
+    + signupRequests();
+
+    }
+
+
+class UserManagementService {
+    - userRepository: UserRepository
+    - encoder: PasswordEncoder
+    - policy: PasswordPolicy
+    + registerNewUser()
+    + activeUsers()
+    + deactivatedUsers()
+    + allUsers()
+    + userOfIdentity()
+    + deactivateUser()
+    + activateUser()
+}
+class UserRepository{
+
+    }
+
+class RegisterUserController{
+    +registerUser()
+}
+
+class SysUserDTO{
+    - String name
+    - String emailAddress
+    - String address
+    - BaseRoles role
+    - boolean active
+
+    +toString()
+    +getName()
+    +getEmailAddress()
+    +getStatus()
+}
+
+class PasswordGeneratorService{
+    +generateModeledPassword()
+}
+
+class ListRolesService{
+    +listSystemRoles()
+}
+
+class PasswordGeneratorService{}
+
+class RegisterUserUI{}
+class SystemUserBuilder {
+    - username: Username
+    - password: Password
+    - name: Name
+    - email: EmailAddress
+    - createdOn: Calendar
+    - roles: RoleSet
+    - policy: PasswordPolicy
+    - encoder: PasswordEncoder
+    + with()
+    + withUsername()
+    + withPassword()
+    + withName()
+    + withEmail()
+    + withRoles()
+    + createdOn()
+    + build()
+}
+
+UserActivationController .-> SysUserDTO
+UserActivationUI .-> SysUserDTO
+
+UserManagementService .-> SystemUserBuilder
+AdminUI .-> RegisterUserUI
+RegisterUserUI .-> RegisterUserController
+RegisterUserController .-> PasswordGeneratorService
+UserActivationController .-> UserManagementService
+RegisterUserController .-> UserManagementService
+RegisterUserController .-> ListRolesService
+AdminUI .-> UserActivationUI
+UserActivationUI .-> UserActivationController
+UserActivationController .-> PersistenceContext : repositories()
+PersistenceContext --> RepositoryFactory : create()
+RepositoryFactory  --> UserRepository : create()
+UserActivationController --> UserManagementService : getUserList()
+UserManagementService --> UserRepository : findAll()
+
+@enduml

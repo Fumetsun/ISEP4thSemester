@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US1020 - Publish Job Offer SSD
+
+autonumber
+
+actor "Customer Manager" as actor
+participant PublishSelectionResultsUI as UI
+
+activate actor
+actor -> UI : requests to publish a job offer
+deactivate actor
+activate UI
+UI --> actor : asks for identity confirmation
+deactivate UI
+activate actor
+actor -> UI : types their password
+deactivate actor
+activate UI
+UI --> actor : shows job offers
+deactivate UI
+activate actor
+actor -> UI : chooses a job offer to publish
+deactivate actor
+activate UI
+UI --> actor : informs if successful
+deactivate UI
+activate actor
+
+
+
+
+
+
+
+@enduml

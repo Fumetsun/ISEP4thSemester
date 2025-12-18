@@ -1,0 +1,74 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant LanguageEngineerUI
+participant ExportTemplateUI
+participant ExportTemplateController
+participant PersistenceContext
+participant RepositoryFactory
+participant PluginHandler
+participant RegisterdPluginFactory
+participant ManagePluginService
+participant RegisteredPluginsRepository
+
+activate LanguageEngineerUI
+LanguageEngineerUI -> ExportTemplateUI : exportTemplate()
+activate ExportTemplateUI
+ExportTemplateUI -> ExportTemplateController : create()
+activate ExportTemplateController
+ExportTemplateController -> PersistenceContext : repositories()
+deactivate ExportTemplateController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> RegisteredPluginsRepository : create()
+deactivate RepositoryFactory
+
+ExportTemplateUI -> ExportTemplateController : getAllPlugins()
+deactivate ExportTemplateUI
+activate ExportTemplateController
+ExportTemplateController -> ManagePluginService : allPlugins()
+deactivate ExportTemplateController
+activate ManagePluginService
+ManagePluginService -> RegisteredPluginsRepository : findAll()
+deactivate ManagePluginService
+activate RegisteredPluginsRepository
+RegisteredPluginsRepository --> ManagePluginService : plugins
+deactivate RegisteredPluginsRepository
+activate ManagePluginService
+ManagePluginService --> ExportTemplateController : pluginsDTO
+deactivate ManagePluginService
+activate ExportTemplateController
+ExportTemplateController --> ExportTemplateUI : pluginsDTO
+deactivate ExportTemplateController
+activate ExportTemplateUI
+ExportTemplateUI -> ExportTemplateUI : show()
+
+ExportTemplateUI -> ExportTemplateController : generateTemplate(fileName, filePath, outputPath)
+deactivate ExportTemplateUI
+activate ExportTemplateController
+ExportTemplateController -> PluginHandler : activateTemplateFunction(filePath, outputFolder)
+deactivate ExportTemplateController
+activate PluginHandler
+note right
+Accesses the plugin functionality
+[can't be repressented]
+end note
+PluginHandler --> ExportTemplateController
+deactivate PluginHandler
+activate ExportTemplateController
+ExportTemplateController --> ExportTemplateUI
+deactivate ExportTemplateController
+
+activate ExportTemplateUI
+ExportTemplateUI --> LanguageEngineerUI
+deactivate ExportTemplateUI
+deactivate LanguageEngineerUI
+
+
+
+
+@enduml

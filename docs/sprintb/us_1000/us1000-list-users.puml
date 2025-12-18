@@ -1,0 +1,47 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant AdminUI
+participant ManageUserController
+participant PersistenceContext
+participant RepositoryFactory
+participant FilteredUserListingService
+participant UserRepository
+
+
+activate AdminUI
+AdminUI -> ManageUserController : create()
+activate ManageUserController
+ManageUserController -> PersistenceContext : repositories()
+deactivate ManageUserController
+activate PersistenceContext
+PersistenceContext -> RepositoryFactory : create()
+deactivate PersistenceContext
+activate RepositoryFactory
+RepositoryFactory -> UserRepository : create()
+deactivate RepositoryFactory
+AdminUI -> ManageUserController : backofficeUsers()
+deactivate AdminUI
+activate ManageUserController
+ManageUserController -> FilteredUserListingService : backofficeUsers()
+deactivate ManageUserController
+activate FilteredUserListingService
+FilteredUserListingService -> UserRepository : findAll()
+deactivate FilteredUserListingService
+activate UserRepository
+UserRepository --> FilteredUserListingService : users
+deactivate UserRepository
+activate FilteredUserListingService
+deactivate UserRepository
+FilteredUserListingService --> ManageUserController : users
+deactivate FilteredUserListingService
+activate ManageUserController
+ManageUserController --> AdminUI : users
+deactivate ManageUserController
+activate AdminUI
+
+AdminUI --> AdminUI
+
+@enduml

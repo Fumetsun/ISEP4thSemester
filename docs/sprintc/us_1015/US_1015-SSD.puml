@@ -1,0 +1,21 @@
+@startuml
+
+title System Sequence Diagram - US 1015
+
+autonumber
+
+actor CustomerManager
+participant System
+
+activate CustomerManager
+CustomerManager -> System : Requests to verify applications
+activate System
+System --> CustomerManager : Shows a list of job offers associated\nwith that Customer Manager
+deactivate System
+CustomerManager -> System : Chooses one
+activate System
+System --> CustomerManager : Shows verified applications and \nthe reasoning in case of failure
+deactivate System
+deactivate CustomerManager
+
+@enduml

@@ -1,0 +1,61 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant CheckNewNotificationsEventWatchdog as watchdog
+participant CheckNewNotificationsEventWatchdogController as ctrl
+participant CheckNotificationHandler as handler
+participant AuthorizationService as authSvc
+participant FollowUpServer as server
+
+autonumber
+
+-> watchdog : publish(event)
+activate watchdog
+watchdog -> ctrl** : create()
+watchdog -> ctrl : checkForNotifications(event.getPassword())
+deactivate watchdog
+activate ctrl
+
+ctrl -> handler** : create(password)
+ctrl -> handler : checkNotifications()
+deactivate ctrl
+
+activate handler
+handler -> authSvc : loggedinUserWithPermissions(BaseRoles.CANDIDATE)
+deactivate handler
+activate authSvc
+
+authSvc --> handler : loggedInUser
+deactivate authSvc
+activate handler
+
+handler -> server : Socket(ipAddress, ASS_PORT)
+deactivate handler
+
+activate server
+server --> handler : socket
+deactivate server
+activate handler
+
+handler -> server : sends credentials for identity verification
+activate server
+
+handler -> server : requests for information on new notifications
+deactivate handler
+server -> handler : inormation
+activate handler
+handler -> server : closeSocket()
+deactivate server
+
+handler -> ctrl : information
+deactivate handler
+activate ctrl
+ctrl -> watchdog : information
+deactivate ctrl
+activate watchdog
+
+<- watchdog : displays information
+deactivate watchdog
+
+
+@enduml

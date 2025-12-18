@@ -1,0 +1,47 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US-3001 Client Server SSD
+
+participant InAppNotificationHandler as handler
+participant FollowUpServer as server
+activate server
+participant H2Database as db
+
+-> handler
+activate handler
+
+note right server
+The activation bar is always active, since these 2 programs
+are, infact, running at the same time in 2 hosts. It is possible that
+the server doing more operations than the one expressed.
+end note
+
+handler -> server : sendVersion()
+
+handler -> server : sendSendInboxCode()
+
+handler -> server : getMyNotifications(loggedUser)
+deactivate handler
+server -> db : getCandidateNotifications(user)
+deactivate server
+
+activate db
+db --> server : notifications
+activate server
+deactivate db
+deactivate handler
+
+server -> handler : notifications
+activate handler
+<-- handler
+deactivate handler
+
+
+
+
+
+
+
+
+@enduml

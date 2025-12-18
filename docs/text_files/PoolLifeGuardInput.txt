@@ -1,0 +1,13 @@
+- Pool LifeGuard Job Requirements -
+
+# Enter your height in meters. (example: 1,30)
+Height: 1,87
+
+# Enter your date of birth. (dd/MM/yyyy)
+Date of Birth: 11/3/2004
+
+# Enter the hour you are applying to work on. (HH:mm)
+Hour: 20:30
+
+# From 1-10, enter how would you qualify yourself in hability to swim. (intenger)
+Answer: 1

@@ -1,0 +1,50 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class CustomerManagerUI{
+    + registerJobOffer()
+}
+
+class RegisterJobOfferUI{
+    - RegisterJobOfferController: theController
+    + doShow()
+    + showRequirementList()
+    + showInterviewModel()
+}
+
+class RegisterJobOfferController{
+    - ManagePluginService: pluginService
+    + getPluginList()
+}
+
+class PersistenceContext{
+    + repositories()
+}
+
+class RepositoryFactory{
+    + newTransactionalContext()
+    + plugins(TransactionalContext var1)
+}
+
+class ManagePluginService{
+    - RegisteredPluginsRepository: repo
+    + allPlugins()
+}
+
+class RegisteredPluginsRepository{
+    + findByRef(name: PluginFileName)
+    + findAllPlugins()
+    + findAllInterviews()
+    + findAllJobRequirements()
+}
+
+CustomerManagerUI .-> RegisterJobOfferUI
+RegisterJobOfferUI .-> RegisterJobOfferController
+RegisterJobOfferController -> PersistenceContext : repositories()
+PersistenceContext --> RepositoryFactory : create()
+
+RegisterJobOfferController --> ManagePluginService
+RepositoryFactory --> RegisteredPluginsRepository : create()
+
+ManagePluginService --> RegisteredPluginsRepository
+@enduml

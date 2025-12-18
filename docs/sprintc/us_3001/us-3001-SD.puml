@@ -1,0 +1,59 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US3001 - SSD
+
+autonumber
+
+actor Candidate as actor
+participant CandidateInboxUI as ui
+participant CandidateInboxController as ctrl
+participant InAppNotificationHandler as handler
+participant FollowUpServer as server
+
+
+
+activate actor
+actor -> ui : requests to view notification inbox
+deactivate actor
+activate ui
+ui --> actor : requests identity verification and option
+deactivate ui
+activate actor
+actor -> ui : inputs requested info
+deactivate actor
+activate ui
+ui -> ctrl : getMyNotifications(option, password)
+deactivate ui
+activate ctrl
+ctrl -> handler : getMyNotifications(option, password)
+deactivate ctrl
+activate handler
+handler -> server
+
+ref over server
+Refer to us-3001-ServerInteraction-SSD
+end ref
+deactivate handler
+activate server
+server --> handler : notifications
+deactivate server
+activate handler
+handler --> ctrl : notifications
+deactivate handler
+activate ctrl
+ctrl --> ui : notifications
+deactivate ctrl
+activate ui
+ui --> actor : show notitifications
+deactivate ui
+activate actor
+
+
+
+
+
+
+
+
+@enduml

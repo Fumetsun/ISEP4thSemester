@@ -1,0 +1,52 @@
+@startuml
+
+class OperatorUI {
+    +exportTemplate()
+}
+
+class ExportJobRequirementsTemplateUI{}
+
+class ExportJobRequirementsTemplateController{
+
+    + getAllJobRequirementPlugins()
+    + generateTemplate()
+    }
+
+class PersistenceContext {
+    +repositories()
+}
+
+class RepositoryFactory {
+    +newTransactionalContext();
+    + plugins(TransactionalContext autoTx);
+    + plugins();
+
+}
+
+class PluginHandler {
+    + activateTemplateFunction()
+}
+
+class ManagePluginService {
+    - registeredPluginRepository: RegisteredPluginsRepository
+    + findAllJobRequirements()
+}
+
+class RegisteredPluginsRepository {
+
+}
+
+OperatorUI ..> ExportJobRequirementsTemplateUI
+ExportJobRequirementsTemplateUI ..> ExportJobRequirementsTemplateController
+
+ExportJobRequirementsTemplateController ..> PluginHandler
+ExportJobRequirementsTemplateController ..> PersistenceContext : repositories ()
+ExportJobRequirementsTemplateController ..> ManagePluginService
+
+ManagePluginService .> RegisteredPluginsRepository
+
+PersistenceContext --> RepositoryFactory : create()
+
+RepositoryFactory --> RegisteredPluginsRepository : create()
+
+@enduml

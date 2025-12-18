@@ -1,0 +1,78 @@
+@startuml
+'https://plantuml.com/class--diagram
+
+package UserAggregate{
+
+    Entity Customer {
+        <<entity>>
+    }
+
+    Entity User {
+        <<root entity>>
+    }
+
+    Class EmailAddress <<(V,#f09000) Identifier value Object>> {}
+    Class Password <<(V,#f04800) value Object>> {}
+    Class Role  <<(V,#f04800) value Object>>{}
+    Class Name <<(V,#f04800) value Object>> {}
+
+}
+
+package JobOfferAggregate{
+
+    Entity JobOffer {
+        <<root entity>>
+    }
+
+    Class JobRefCode <<(V, #f09000) Identifier value Object>> {}
+    Class JobTitle <<(V,#f04800) value Object>> {}
+    Class ContractType  <<(V,#f04800) value Object>>{}
+    Class JobMode <<(V,#f04800) value Object>> {}
+    Class NumberOfVacancies <<(V,#f04800) value Object>> {}
+    Class JobsDescription <<(V,#f04800) value Object>> {}
+}
+
+
+package ApplicationAggregate{
+
+    Entity Application{
+        <<root entity>>
+    }
+
+    Class ApplicationAttachedFile <<(V,#f04800) value Object>> {}
+    Class ApplicationRefCode <<(V,#f09000) Identifier value Object>> {}
+    Class ApplicationAttachedFilesLocation <<(V,#f04800) value Object>> {}
+    Class Rank <<(V,#f04800) value Object>> {}
+    Class ApplicationEmail <<(V,#f04800) value Object>> {}
+}
+
+
+Class Address  <<(V,#f04800) value Object>>{}
+
+User "1" --- "1" EmailAddress : identifies <
+User "1" --- "1" Role : classifies <
+User "1" --- "1" Name : describes <
+User "1" --- "1" Password : describes <
+User "1" -down---- "*" JobOffer : > registers
+
+Customer --|> User
+Customer <---- JobOffer : < requests creation
+
+JobOffer - Address : < describes
+JobOffer "1" ---- "1" JobRefCode : identifies <
+JobOffer "1" ---- "1" JobTitle : describes <
+JobOffer "1" ---- "1" ContractType : describes <
+JobOffer "1" ---- "1" JobMode : describes <
+JobOffer "1" ---- "1" NumberOfVacancies : describes <
+JobOffer "1" ---- "1" JobsDescription : "describes" <
+
+Application "*" --> "1" JobOffer : > pertains to
+Application "1" -- "1" ApplicationEmail : > contains
+Application "1" -- "1" ApplicationRefCode : describes <
+Application "1" -- "*" ApplicationAttachedFile : > contains
+Application "1" -- "1" ApplicationAttachedFilesLocation : > contains
+Application - Rank : describes <
+
+
+
+@enduml

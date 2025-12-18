@@ -1,0 +1,36 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title US3001 - Inbox interaction - SSD
+
+autonumber
+
+actor Candidate as actor
+participant CandidateInboxUI as ui
+
+
+
+
+activate actor
+actor -> ui : requests to view notification inbox
+deactivate actor
+activate ui
+ui --> actor : requests identity verification and filtering option
+deactivate ui
+activate actor
+actor -> ui : inputs requested info
+deactivate actor
+activate ui
+
+ui --> actor : shows notitifications
+deactivate ui
+activate actor
+
+
+
+
+
+
+
+
+@enduml

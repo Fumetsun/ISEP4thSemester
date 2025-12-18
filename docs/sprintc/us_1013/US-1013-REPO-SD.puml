@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+autonumber
+
+participant RankingRepository as rankRepo
+participant H2Database as db
+
+-> rankRepo : updateRanking(rankings)
+
+deactivate db
+
+activate rankRepo
+deactivate rankRepo
+
+loop for each ranking
+rankRepo -> db  : query database for ranking object with\n jobOfferRefCode and applicationRefCode from DTO
+deactivate rankRepo
+activate db
+db --> rankRepo : ranking
+deactivate db
+activate rankRepo
+
+rankRepo -> db: save(updatedRanking)
+deactivate rankRepo
+activate db
+db --> rankRepo : ranking
+deactivate db
+activate rankRepo
+end loop
+<-- rankRepo : rankings
+
+@enduml

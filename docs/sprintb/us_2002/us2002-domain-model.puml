@@ -1,0 +1,107 @@
+@startuml
+'https://plantuml.com/class--diagram
+
+
+
+
+
+
+
+
+
+
+
+Package CandidateAggregate{
+    Entity Candidate {
+        <<root entity>>
+    }
+    Class CandidatePhoneNumber <<(V,#f09000) Identity value Object>> {
+
+        }
+}
+CandidatePhoneNumber .- Candidate : > identifies
+
+
+package JobOfferAggregate{
+
+
+Entity JobOffer {
+    <<root entity>>
+}
+Class Address  <<(V,#f04800) value Object>>{
+
+}
+
+Class JobRefCode <<(V, #f09000) Identifier value Object>> {
+
+}
+
+Class JobTitle <<(V,#f04800) value Object>> {
+
+}
+Class ContractType  <<(V,#f04800) value Object>>{
+
+}
+Class JobMode <<(V,#f04800) value Object>> {
+
+}
+Class NumberOfVacancies <<(V,#f04800) value Object>> {
+
+}
+Class JobsDescription <<(V,#f04800) value Object>> {
+
+}
+
+
+}
+
+Package ApplicationAggregate{
+
+
+        Entity Application  {
+                        <<root entity>>
+                    }
+
+       Class ApplicationAttachedFile <<(V,#f04800) value Object>> {
+
+       }
+       Class ApplicationRefCode <<(V,#f09000) Identifier value Object>> {
+
+              }
+       Class ApplicationAttachedFilesLocation <<(V,#f04800) value Object>> {
+
+              }
+
+       Class ApplicationEmail <<(V,#f04800) value Object>> {
+
+              }
+
+}
+
+
+
+
+
+
+
+JobOffer - Address : < descibres
+
+Application "*" --> "1" JobOffer : > pertains to
+Application "1" - "1" ApplicationEmail : > contains
+Application "1" -- "1" ApplicationRefCode : describes <
+Application "1" -- "*" ApplicationAttachedFile : > contains
+Application "1" -- "1" ApplicationAttachedFilesLocation : > contains
+Candidate "1" ----- "*" Application : > makes
+
+
+JobOffer "1" ---- "1" JobRefCode : identifies <
+JobOffer "1" ---- "1" JobTitle : describes <
+JobOffer "1" ---- "1" ContractType : describes <
+JobOffer "1" ---- "1" JobMode : describes <
+JobOffer "1" ---- "1" NumberOfVacancies : describes <
+JobOffer "1" ---- "1" JobsDescription : "describes" <
+
+
+
+
+@enduml

@@ -1,0 +1,62 @@
+==12554== Memcheck, a memory error detector
+==12554== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==12554== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==12554== Command: ./app_file_bot inputDir outputDir 5
+==12554== Parent PID: 12552
+==12554== 
+==12555== 
+==12555== HEAP SUMMARY:
+==12555==     in use at exit: 0 bytes in 0 blocks
+==12555==   total heap usage: 3 allocs, 3 frees, 1,107 bytes allocated
+==12555== 
+==12555== All heap blocks were freed -- no leaks are possible
+==12555== 
+==12555== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==12558== 
+==12558== HEAP SUMMARY:
+==12558==     in use at exit: 0 bytes in 0 blocks
+==12558==   total heap usage: 43 allocs, 43 frees, 151,332 bytes allocated
+==12558== 
+==12558== All heap blocks were freed -- no leaks are possible
+==12558== 
+==12558== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==12559== 
+==12560== 
+==12559== HEAP SUMMARY:
+==12559==     in use at exit: 0 bytes in 0 blocks
+==12559==   total heap usage: 67 allocs, 67 frees, 263,751 bytes allocated
+==12559== 
+==12560== HEAP SUMMARY:
+==12560==     in use at exit: 0 bytes in 0 blocks
+==12560==   total heap usage: 35 allocs, 35 frees, 113,858 bytes allocated
+==12560== 
+==12559== All heap blocks were freed -- no leaks are possible
+==12560== All heap blocks were freed -- no leaks are possible
+==12559== 
+==12560== 
+==12559== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==12560== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==12556== 
+==12557== 
+==12556== HEAP SUMMARY:
+==12556==     in use at exit: 0 bytes in 0 blocks
+==12556==   total heap usage: 43 allocs, 43 frees, 151,329 bytes allocated
+==12556== 
+==12556== All heap blocks were freed -- no leaks are possible
+==12557== HEAP SUMMARY:
+==12557==     in use at exit: 0 bytes in 0 blocks
+==12557==   total heap usage: 43 allocs, 43 frees, 151,332 bytes allocated
+==12557== 
+==12556== 
+==12557== All heap blocks were freed -- no leaks are possible
+==12556== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==12557== 
+==12557== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==12554== 
+==12554== HEAP SUMMARY:
+==12554==     in use at exit: 0 bytes in 0 blocks
+==12554==   total heap usage: 298 allocs, 298 frees, 1,889,808 bytes allocated
+==12554== 
+==12554== All heap blocks were freed -- no leaks are possible
+==12554== 
+==12554== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

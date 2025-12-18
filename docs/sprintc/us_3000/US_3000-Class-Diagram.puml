@@ -1,0 +1,40 @@
+@startuml
+
+class CandidateUI {
+    +changeJobOfferPhase()
+
+}
+
+class ListOwnCandidateApplicationsUI {
+
+}
+
+class ListOwnCandidateApplicationsController {
+    +listOwnApplications()
+}
+
+class ServerCandidateApplicationHandler {
+    +getCandidateOwnApplications()
+}
+
+class FollowUpServer {
+    +getAllCandidateApplications()
+}
+
+class CandidateRepository {}
+
+class UserRepository {}
+
+class JobApplicationRepository {}
+
+CandidateUI --> ListOwnCandidateApplicationsUI
+ListOwnCandidateApplicationsUI --> ListOwnCandidateApplicationsController
+ListOwnCandidateApplicationsController --> ServerCandidateApplicationHandler
+
+ServerCandidateApplicationHandler ..> FollowUpServer
+
+FollowUpServer ..> CandidateRepository
+FollowUpServer ..> UserRepository
+FollowUpServer ..> JobApplicationRepository
+
+@enduml

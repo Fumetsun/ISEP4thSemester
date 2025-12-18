@@ -1,0 +1,208 @@
+@startuml US1018_SD
+'https://plantuml.com/sequence-diagram
+
+title Sequence Diagram - US 1018
+
+autonumber
+
+actor "Customer Manager"					as cm
+participant MainMenu						as mm
+participant GradeInterviewsUI				as ui
+participant GradeInterviewsController		as ctrl
+participant PersistenceContext				as persistence
+participant RepositoryFactory				as repo
+participant ListJobOfferService				as offerservice
+participant ListJobApplicationService		as listappservice
+participant JobApplicationManagementService	as appservice
+participant PluginHandlerService			as pluginservice
+participant JobOfferRepository				as offerrepo
+participant JobOffer						as offer
+participant JobOfferDTO						as offerdto
+participant JobApplicationRepository		as apprepo
+participant JobApplication					as app
+participant ApplicationDTO					as appdto
+
+activate cm
+
+	cm -> mm : grade inteviews
+
+	activate mm
+
+		mm -> ui : show()
+
+		activate ui
+
+			ui -> ctrl : create()
+
+			activate ctrl
+				
+				ctrl -> persistence : repositories()
+
+				activate persistence
+					persistence -> repo : create()
+				deactivate persistence
+
+			deactivate ctrl
+
+			ui -> ctrl : getJobOffers()
+
+			activate ctrl
+
+				ctrl -> offerservice : getJobOffersOfManager(manager)
+
+				activate offerservice
+
+					offerservice -> offerrepo : findAllOffersOfManager(manager)
+
+					activate offerrepo
+						offerrepo --> offerservice : offers
+					deactivate offerrepo
+				
+					loop for each offer
+
+						offerservice -> offer : toDTO()
+
+						activate offer
+							offer -> offerdto : create
+							offer --> offerservice : jobOfferDTO
+						deactivate offer
+					
+					end
+
+					offerservice --> ctrl : listOffersDTO
+				
+				deactivate offerservice
+
+				ctrl --> ui : listOffersDTO
+
+			deactivate ctrl
+
+			ui --> cm : choose offer
+
+		deactivate ui
+
+		cm -> ui : select offer
+
+		activate ui
+
+			ui -> ctrl : getPlugin(JobOfferDTO)
+
+			activate ctrl
+
+				ctrl -> offerservice : getInterviewModelOfJobOffer(fferDTO)
+
+				activate offerservice
+
+					offerservice -> offerrepo : findInterviewByJobRefCode(jobRefCode)
+
+					activate offerrepo
+						offerrepo --> offerservice : interviewModel
+					deactivate offerrepo
+
+					offerservice --> ctrl : interviewModel
+
+				deactivate offerservice
+			
+				ctrl --> ui : true/false
+
+			deactivate ctrl
+
+			ui -> ctrl : getApplications(JobOfferDTO)
+			
+			activate ctrl
+
+				ctrl -> listappservice : getJobApplicationsOfJobOfferNonDTO(jobRefCode)
+
+				activate listappservice
+
+					listappservice -> apprepo : findAllApplicationsOfJobOffer(jobRefCode)
+
+					activate apprepo
+						apprepo --> listappservice : applications
+					deactivate apprepo
+			
+					listappservice --> ctrl: applications
+				
+				deactivate listappservice
+
+				ctrl --> ui : true/false
+
+			deactivate ctrl
+
+			ui -> ctrl : gradeInterviews(JobOfferDTO)
+
+			activate ctrl
+
+				ctrl -> offerservice : getInterviewModelOfJobOffer(fferDTO)
+
+				activate offerservice
+
+					offerservice -> offerrepo : findInterviewByJobRefCode(jobRefCode)
+
+					activate offerrepo
+						offerrepo --> offerservice : interviewModel
+					deactivate offerrepo
+
+					offerservice --> ctrl : interviewModel
+
+				deactivate offerservice
+
+				ctrl -> listappservice : getJobApplicationsOfJobOfferNonDTO(jobRefCode)
+
+				activate listappservice
+
+					listappservice -> apprepo : findAllApplicationsOfJobOffer(jobRefCode)
+
+					activate apprepo
+						apprepo --> listappservice : applications
+					deactivate apprepo
+			
+					listappservice --> ctrl: applications
+				
+				deactivate listappservice
+
+				ctrl -> appservice : gradeAndSave(applications, interviewModel)
+				
+				activate appservice
+
+					loop for each application
+
+						alt has interview file
+
+							appservice -> pluginservice : activateEvaluationFunction(\ninterviewModel, answers, type)
+
+							activate pluginservice
+								pluginservice --> appservice : grade
+							deactivate pluginservice
+
+								appservice -> app : addGrade(grade)
+								appservice -> apprepo : save
+
+							appservice -> app : toDTO()
+
+							activate app
+								app -> appdto : create
+								app --> appservice : applicatioDTO
+							deactivate app
+
+						end
+
+					end
+				
+					appservice --> ctrl : applicationsDTO
+				
+				deactivate appservice
+
+				ctrl --> ui : applicationsDTO
+
+			deactivate ctrl
+
+			ui --> cm : applications
+
+		deactivate ui
+
+	deactivate mm
+
+deactivate cm
+
+@enduml
